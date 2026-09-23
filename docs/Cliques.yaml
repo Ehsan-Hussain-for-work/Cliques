@@ -1,0 +1,526 @@
+openapi: 3.1.0
+info:
+  title: Cliques
+  description: Chatroom Web Service
+  version: 0.1.0
+servers:
+  - url: "https://localhost:8080/api/v0.1"
+    description: Local Development Server
+
+paths:
+  /users:
+    get:
+      summary: Get a list of all users
+      description: Retrieves a list of users. Can be filtered by id, name, warning flag, etc.
+      parameters:
+        - name: username
+          in: query
+          description: Filter users by username (partial match)
+          required: false
+          schema:
+            type: string
+            example: "QueenOfYasss"
+        - name: warningStatus
+          in: query
+          description: Filter users by warning flag
+          required: false
+          schema:
+            type: boolean
+            example: true
+      responses:
+        '200':
+          description: A JSON array of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+    put:
+      summary: Update an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    delete:
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+            example: 68
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          description: User not found
+
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 68
+      responses:
+        '200':
+          description: A single user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /groups:
+    get:
+      summary: Get a list of all groups
+      parameters:
+        - name: name
+          in: query
+          description: Filter groups by name (partial match)
+          required: false
+          schema:
+            type: string
+            example: "Knights"
+      responses:
+        '200':
+          description: A JSON array of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+    post:
+      summary: Create a new group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '201':
+          description: Group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+    put:
+      summary: Update an existing group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '200':
+          description: Group updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+    delete:
+      summary: Delete a group
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 90
+      responses:
+        '204':
+          description: Group deleted
+
+  /messages:
+    get:
+      summary: Get a list of all messages
+      parameters:
+        - name: senderId
+          in: query
+          description: Filter messages by sender
+          required: false
+          schema:
+            type: integer
+            example: 654
+      responses:
+        '200':
+          description: A JSON array of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+    post:
+      summary: Create a new message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+    put:
+      summary: Update an existing message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          description: Message updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+    delete:
+      summary: Delete a message
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1024
+      responses:
+        '204':
+          description: Message deleted
+
+  /attachments:
+    get:
+      summary: Get a list of all attachments
+      parameters:
+        - name: format
+          in: query
+          description: Filter attachments by file format
+          required: false
+          schema:
+            type: string
+            example: "zip"
+      responses:
+        '200':
+          description: A JSON array of attachments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attachment'
+    post:
+      summary: Create a new attachment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attachment'
+      responses:
+        '201':
+          description: Attachment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attachment'
+    delete:
+      summary: Delete an attachment
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 207
+      responses:
+        '204':
+          description: Attachment deleted
+
+  /channels:
+    get:
+      summary: Get a list of all channels
+      parameters:
+        - name: adultGate
+          in: query
+          description: Filter channels by adult gate flag
+          required: false
+          schema:
+            type: boolean
+            example: false
+      responses:
+        '200':
+          description: A JSON array of channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+    post:
+      summary: Create a new channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        '201':
+          description: Channel created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+    put:
+      summary: Update an existing channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        '200':
+          description: Channel updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+    delete:
+      summary: Delete a channel
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 207
+      responses:
+        '204':
+          description: Channel deleted
+
+  /memberships:
+    get:
+      summary: Get a list of all memberships
+      parameters:
+        - name: groupId
+          in: query
+          description: Filter memberships by group
+          required: false
+          schema:
+            type: integer
+            example: 62
+      responses:
+        '200':
+          description: A JSON array of memberships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+    post:
+      summary: Create a new membership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '201':
+          description: Membership created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+    put:
+      summary: Update an existing membership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '200':
+          description: Membership updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 68
+        username:
+          type: string
+          example: "QueenOfYasss"
+        creationDate:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:18:54Z'
+        userBirthday:
+          type: string
+          format: date
+          example: '2026-09-22'
+        warningStatus:
+          type: boolean
+          example: true
+        lastMessage:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 90
+        name:
+          type: string
+          example: "Knights of Wonky Table"
+        creationDate:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+        memberCount:
+          type: integer
+          example: 5
+        adultGate:
+          type: boolean
+          example: false
+        lastMessage:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+        memberships:
+          type: array
+          items:
+            type: integer
+          example: [16, 108, 2067, 908817]
+
+    Membership:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 54
+        groupId:
+          type: integer
+          example: 62
+        channelId:
+          type: integer
+          example: 905
+        modStatus:
+          type: boolean
+          example: true
+        joinDate:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+        leaveDate:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 207
+        memberships:
+          type: array
+          items:
+            type: integer
+          example: [16, 108, 2067, 908817]
+        lastMessage:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+        adultGate:
+          type: boolean
+          example: false
+
+    Message:
+      type: object
+      properties:
+        body:
+          type: string
+          example: "😂"
+        sendDate:
+          type: string
+          format: date-time
+          example: '2026-09-22T20:23:06Z'
+        id:
+          type: integer
+          example: 2098019652193
+        edited:
+          type: boolean
+          example: false
+        senderId:
+          type: integer
+          example: 654
+
+    Attachment:
+      type: object
+      properties:
+        format:
+          type: string
+          example: "zip"
+        sizeInKilobytes:
+          type: integer
+          example: 2048
