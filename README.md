@@ -14,4 +14,4 @@ A web service meant to create chat groups, assign roles, log chat messages, and 
 - intellij idea
 
 ### API Documentation
-placeholder
+yamllink
