@@ -14,4 +14,4 @@ A web service meant to create chat groups, assign roles, log chat messages, and 
 - intellij idea
 
 ### API Documentation
-yamllink
+[Read our YAML documentation here](https://github.com/Ehsan-Hussain-for-work/Cliques/blob/yaml-adding-branch/docs/Cliques.yaml)
