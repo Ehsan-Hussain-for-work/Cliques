@@ -5,7 +5,7 @@ A web service meant to create chat groups, assign roles, log chat messages, and 
 
 ### Team members
 - Ehsan Hussain
-- Alan Telemishey
+- Alan Telemishev
 
 ### Tech Stack
 - phpMyAdmin
