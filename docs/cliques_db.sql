@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 11, 2026 at 09:07 PM
+-- Generation Time: Oct 12, 2026 at 02:08 AM
 -- Server version: 11.8.5-MariaDB-log
 -- PHP Version: 8.5.1
 
@@ -42,6 +42,8 @@ CREATE TABLE `attachments` (
 
 CREATE TABLE `channels` (
   `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `groupId` int(11) NOT NULL,
   `adultGate` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -84,6 +86,7 @@ CREATE TABLE `messages` (
   `body` text NOT NULL,
   `sentTime` datetime NOT NULL DEFAULT current_timestamp(),
   `senderId` int(11) NOT NULL,
+  `channelId` int(11) DEFAULT NULL,
   `edited` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -117,7 +120,9 @@ ALTER TABLE `attachments`
 -- Indexes for table `channels`
 --
 ALTER TABLE `channels`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_channels_channelName` (`name`,`groupId`),
+  ADD KEY `fk_channels_groupId` (`groupId`);
 
 --
 -- Indexes for table `groups`
@@ -138,14 +143,16 @@ ALTER TABLE `memberships`
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_messages_senderId` (`senderId`);
+  ADD KEY `fk_messages_senderId` (`senderId`),
+  ADD KEY `fk_messages_channelId` (`channelId`);
 
 --
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `username` (`username`),
+  ADD UNIQUE KEY `userEmail` (`userEmail`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -192,6 +199,12 @@ ALTER TABLE `attachments`
   ADD CONSTRAINT `fk_attachments_messageId` FOREIGN KEY (`messageId`) REFERENCES `messages` (`id`);
 
 --
+-- Constraints for table `channels`
+--
+ALTER TABLE `channels`
+  ADD CONSTRAINT `fk_channels_groupId` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`);
+
+--
 -- Constraints for table `memberships`
 --
 ALTER TABLE `memberships`
@@ -203,6 +216,7 @@ ALTER TABLE `memberships`
 -- Constraints for table `messages`
 --
 ALTER TABLE `messages`
+  ADD CONSTRAINT `fk_messages_channelId` FOREIGN KEY (`channelId`) REFERENCES `channels` (`id`),
   ADD CONSTRAINT `fk_messages_senderId` FOREIGN KEY (`senderId`) REFERENCES `users` (`id`);
 COMMIT;
 

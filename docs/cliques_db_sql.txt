@@ -7,70 +7,24 @@ USE cliques_db;
 CREATE TABLE users ( 
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20) NOT NULL UNIQUE,
-    userEmail VARCHAR(50) NOT NULL,
+    userEmail VARCHAR(50) NOT NULL UNIQUE,
     creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     userBirthday DATE NULL,
-    -- passwordHash VARCHAR(20) NOT NULL,
-    -- salt VARCHAR(40) NOT NULL,
-    -- lastMessage DATETIME NULL,
+    -- passwordHash VARCHAR(20) NOT NULL, + salt VARCHAR(40) NOT NULL,
     warningStatus BOOLEAN NOT NULL DEFAULT FALSE
 );
-
-ALTER TABLE users
-	ADD CONSTRAINT chk_emailFormat
-    CHECK (userEmail LIKE '_%@_%._%');
 
 CREATE TABLE groups (
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
     creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    -- memberCount INT NOT NULL,
-    -- lastMessage DATETIME NULL,
     adultGate BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE messages (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    body TEXT NOT NULL,
-    sentTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    senderId INT NOT NULL,
-    -- groupId INT NULL,
-    -- channelId INT NULL,
-    edited BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-ALTER TABLE messages
-	ADD CONSTRAINT fk_messages_senderId
-    FOREIGN KEY (senderId)
-    REFERENCES users(id);
-
-/*
-ALTER TABLE messages
-	ADD CONSTRAINT fk_messages_groupId
-    FOREIGN KEY (groupId)
-    REFERENCES groups(id);
-    
-ALTER TABLE messages
-	ADD CONSTRAINT fk_messages_channelId
-    FOREIGN KEY (channelId)
-    REFERENCES channels(id);
-*/
-    
-CREATE TABLE attachments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    messageId BIGINT NOT NULL,
-    format VARCHAR(20) NOT NULL,
-    sizeInKilobytes BIGINT NOT NULL
-);
-
-ALTER TABLE attachments
-	ADD CONSTRAINT fk_attachments_messageId
-    FOREIGN KEY (messageId)
-    REFERENCES messages(id);
-    
 CREATE TABLE channels (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-    -- lastMessage DATETIME NULL,
+    name VARCHAR(50) NOT NULL,
+    groupId INT NOT NULL,
     adultGate BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -82,6 +36,37 @@ CREATE TABLE memberships (
     joinDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     leaveDate DATETIME NULL
 );
+
+CREATE TABLE messages (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    body TEXT NOT NULL,
+    sentTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    senderId INT NOT NULL,
+    channelId INT NULL,
+    edited BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE attachments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    messageId BIGINT NOT NULL,
+    format VARCHAR(20) NOT NULL,
+    -- body TEXT NOT NULL,
+    sizeInKilobytes BIGINT NOT NULL
+);
+
+
+ALTER TABLE users
+	ADD CONSTRAINT chk_emailFormat
+    CHECK (userEmail LIKE '_%@_%._%');
+    
+ALTER TABLE channels
+	ADD CONSTRAINT fk_channels_groupId
+    FOREIGN KEY (groupId)
+    REFERENCES groups(id);
+    
+ALTER TABLE channels
+	ADD CONSTRAINT unique_channels_channelName
+    UNIQUE (name, groupId);
 
 ALTER TABLE memberships
 	ADD CONSTRAINT pk_memberships
@@ -101,3 +86,18 @@ ALTER TABLE memberships
 	ADD CONSTRAINT fk_memberships_channelId
     FOREIGN KEY (channelId)
     REFERENCES channels(id);
+
+ALTER TABLE messages
+	ADD CONSTRAINT fk_messages_senderId
+    FOREIGN KEY (senderId)
+    REFERENCES users(id);
+    
+ALTER TABLE messages
+	ADD CONSTRAINT fk_messages_channelId
+    FOREIGN KEY (channelId)
+    REFERENCES channels(id);
+
+ALTER TABLE attachments
+	ADD CONSTRAINT fk_attachments_messageId
+    FOREIGN KEY (messageId)
+    REFERENCES messages(id);
