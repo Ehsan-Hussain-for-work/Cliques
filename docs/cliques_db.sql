@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 12, 2026 at 02:08 AM
+-- Generation Time: Oct 14, 2026 at 12:10 AM
 -- Server version: 11.8.5-MariaDB-log
 -- PHP Version: 8.5.1
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attachments` (
   `id` int(11) NOT NULL,
-  `messageId` bigint(20) NOT NULL,
+  `message_id` bigint(20) NOT NULL,
   `format` varchar(20) NOT NULL,
   `sizeInKilobytes` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -43,8 +43,8 @@ CREATE TABLE `attachments` (
 CREATE TABLE `channels` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `groupId` int(11) NOT NULL,
-  `adultGate` tinyint(1) NOT NULL DEFAULT 0
+  `group_id` int(11) NOT NULL,
+  `adult_gate` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -56,8 +56,8 @@ CREATE TABLE `channels` (
 CREATE TABLE `groups` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `creationDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `adultGate` tinyint(1) NOT NULL DEFAULT 0
+  `creation_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `adult_gate` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -67,12 +67,12 @@ CREATE TABLE `groups` (
 --
 
 CREATE TABLE `memberships` (
-  `userId` int(11) NOT NULL,
-  `groupId` int(11) NOT NULL,
-  `channelId` int(11) NOT NULL,
-  `modStatus` tinyint(1) NOT NULL DEFAULT 0,
-  `joinDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `leaveDate` datetime DEFAULT NULL
+  `user_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `channel_id` int(11) NOT NULL,
+  `mod_status` tinyint(1) NOT NULL DEFAULT 0,
+  `join_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `leave_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -84,9 +84,9 @@ CREATE TABLE `memberships` (
 CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
   `body` text NOT NULL,
-  `sentTime` datetime NOT NULL DEFAULT current_timestamp(),
-  `senderId` int(11) NOT NULL,
-  `channelId` int(11) DEFAULT NULL,
+  `sent_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `sender_id` int(11) NOT NULL,
+  `channel_id` int(11) DEFAULT NULL,
   `edited` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -99,10 +99,11 @@ CREATE TABLE `messages` (
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(20) NOT NULL,
-  `userEmail` varchar(50) NOT NULL,
-  `creationDate` datetime NOT NULL DEFAULT current_timestamp(),
-  `userBirthday` date DEFAULT NULL,
-  `warningStatus` tinyint(1) NOT NULL DEFAULT 0
+  `user_email` varchar(50) NOT NULL,
+  `creation_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `user_birthday` date DEFAULT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `warning_status` tinyint(1) NOT NULL DEFAULT 0
 ) ;
 
 --
@@ -114,15 +115,15 @@ CREATE TABLE `users` (
 --
 ALTER TABLE `attachments`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_attachments_messageId` (`messageId`);
+  ADD KEY `fk_attachments_message` (`message_id`);
 
 --
 -- Indexes for table `channels`
 --
 ALTER TABLE `channels`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_channels_channelName` (`name`,`groupId`),
-  ADD KEY `fk_channels_groupId` (`groupId`);
+  ADD UNIQUE KEY `uq_channels_name` (`name`,`group_id`),
+  ADD KEY `fk_channels_group` (`group_id`);
 
 --
 -- Indexes for table `groups`
@@ -134,17 +135,17 @@ ALTER TABLE `groups`
 -- Indexes for table `memberships`
 --
 ALTER TABLE `memberships`
-  ADD PRIMARY KEY (`userId`,`groupId`,`channelId`),
-  ADD KEY `fk_memberships_groupId` (`groupId`),
-  ADD KEY `fk_memberships_channelId` (`channelId`);
+  ADD PRIMARY KEY (`user_id`,`group_id`,`channel_id`),
+  ADD KEY `fk_memberships_group` (`group_id`),
+  ADD KEY `fk_memberships_channel` (`channel_id`);
 
 --
 -- Indexes for table `messages`
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_messages_senderId` (`senderId`),
-  ADD KEY `fk_messages_channelId` (`channelId`);
+  ADD KEY `fk_messages_sender` (`sender_id`),
+  ADD KEY `fk_messages_channel` (`channel_id`);
 
 --
 -- Indexes for table `users`
@@ -152,7 +153,7 @@ ALTER TABLE `messages`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `userEmail` (`userEmail`);
+  ADD UNIQUE KEY `user_email` (`user_email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -196,28 +197,28 @@ ALTER TABLE `users`
 -- Constraints for table `attachments`
 --
 ALTER TABLE `attachments`
-  ADD CONSTRAINT `fk_attachments_messageId` FOREIGN KEY (`messageId`) REFERENCES `messages` (`id`);
+  ADD CONSTRAINT `fk_attachments_message` FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`);
 
 --
 -- Constraints for table `channels`
 --
 ALTER TABLE `channels`
-  ADD CONSTRAINT `fk_channels_groupId` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`);
+  ADD CONSTRAINT `fk_channels_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
 
 --
 -- Constraints for table `memberships`
 --
 ALTER TABLE `memberships`
-  ADD CONSTRAINT `fk_memberships_channelId` FOREIGN KEY (`channelId`) REFERENCES `channels` (`id`),
-  ADD CONSTRAINT `fk_memberships_groupId` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `fk_memberships_userId` FOREIGN KEY (`userId`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_memberships_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
+  ADD CONSTRAINT `fk_memberships_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
+  ADD CONSTRAINT `fk_memberships_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `fk_messages_channelId` FOREIGN KEY (`channelId`) REFERENCES `channels` (`id`),
-  ADD CONSTRAINT `fk_messages_senderId` FOREIGN KEY (`senderId`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_messages_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
+  ADD CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
