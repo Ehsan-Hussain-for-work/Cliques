@@ -46,6 +46,7 @@ CREATE TABLE messages (
     edited BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+/*
 CREATE TABLE attachments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     message_id BIGINT NOT NULL,
@@ -54,6 +55,7 @@ CREATE TABLE attachments (
     url VARCHAR(2083) NOT NULL,
     size_in_kilobytes BIGINT NOT NULL
 );
+*/
 
 
 ALTER TABLE users
@@ -98,7 +100,9 @@ ALTER TABLE messages
     FOREIGN KEY (channel_id)
     REFERENCES channels(id);
 
+/*
 ALTER TABLE attachments
 	ADD CONSTRAINT fk_attachments_message
     FOREIGN KEY (message_id)
     REFERENCES messages(id);
+*/

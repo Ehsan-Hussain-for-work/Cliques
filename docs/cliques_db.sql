@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 14, 2026 at 12:30 AM
+-- Generation Time: Oct 14, 2026 at 08:19 PM
 -- Server version: 11.8.5-MariaDB-log
 -- PHP Version: 8.5.1
 
@@ -20,21 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `cliques_db`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `attachments`
---
-
-CREATE TABLE `attachments` (
-  `id` int(11) NOT NULL,
-  `message_id` bigint(20) NOT NULL,
-  `format` varchar(20) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `url` varchar(2083) NOT NULL,
-  `size_in_kilobytes` bigint(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -113,13 +98,6 @@ CREATE TABLE `users` (
 --
 
 --
--- Indexes for table `attachments`
---
-ALTER TABLE `attachments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_attachments_message` (`message_id`);
-
---
 -- Indexes for table `channels`
 --
 ALTER TABLE `channels`
@@ -162,12 +140,6 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `attachments`
---
-ALTER TABLE `attachments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `channels`
 --
 ALTER TABLE `channels`
@@ -194,12 +166,6 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `attachments`
---
-ALTER TABLE `attachments`
-  ADD CONSTRAINT `fk_attachments_message` FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`);
 
 --
 -- Constraints for table `channels`

@@ -234,53 +234,53 @@ paths:
         '204':
           description: Message deleted
 
-  /attachments:
-    get:
-      summary: Get a list of all attachments
-      parameters:
-        - name: format
-          in: query
-          description: Filter attachments by file format
-          required: false
-          schema:
-            type: string
-            example: "zip"
-      responses:
-        '200':
-          description: A JSON array of attachments
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Attachment'
-    post:
-      summary: Create a new attachment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Attachment'
-      responses:
-        '201':
-          description: Attachment created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Attachment'
-    delete:
-      summary: Delete an attachment
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-            example: 207
-      responses:
-        '204':
-          description: Attachment deleted
+  # /attachments:
+  #   get:
+  #     summary: Get a list of all attachments
+  #     parameters:
+  #       - name: format
+  #         in: query
+  #         description: Filter attachments by file format
+  #         required: false
+  #         schema:
+  #           type: string
+  #           example: "zip"
+  #     responses:
+  #       '200':
+  #         description: A JSON array of attachments
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/Attachment'
+  #   post:
+  #     summary: Create a new attachment
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/Attachment'
+  #     responses:
+  #       '201':
+  #         description: Attachment created
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Attachment'
+  #   delete:
+  #     summary: Delete an attachment
+  #     parameters:
+  #       - name: id
+  #         in: query
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 207
+  #     responses:
+  #       '204':
+  #         description: Attachment deleted
 
   /channels:
     get:
@@ -515,12 +515,12 @@ components:
           type: integer
           example: 654
 
-    Attachment:
-      type: object
-      properties:
-        format:
-          type: string
-          example: "zip"
-        sizeInKilobytes:
-          type: integer
-          example: 2048
+    # Attachment:
+    #   type: object
+    #   properties:
+    #     format:
+    #       type: string
+    #       example: "zip"
+    #     sizeInKilobytes:
+    #       type: integer
+    #       example: 2048
