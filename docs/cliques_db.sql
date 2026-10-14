@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 14, 2026 at 12:10 AM
+-- Generation Time: Oct 14, 2026 at 12:30 AM
 -- Server version: 11.8.5-MariaDB-log
 -- PHP Version: 8.5.1
 
@@ -31,7 +31,9 @@ CREATE TABLE `attachments` (
   `id` int(11) NOT NULL,
   `message_id` bigint(20) NOT NULL,
   `format` varchar(20) NOT NULL,
-  `sizeInKilobytes` bigint(20) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `url` varchar(2083) NOT NULL,
+  `size_in_kilobytes` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

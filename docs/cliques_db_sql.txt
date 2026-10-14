@@ -50,7 +50,9 @@ CREATE TABLE attachments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     message_id BIGINT NOT NULL,
     format VARCHAR(20) NOT NULL,
-    sizeInKilobytes BIGINT NOT NULL
+    name VARCHAR(100) NOT NULL,
+    url VARCHAR(2083) NOT NULL,
+    size_in_kilobytes BIGINT NOT NULL
 );
 
 
