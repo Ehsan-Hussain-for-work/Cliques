@@ -37,7 +37,7 @@ $container = $containerBuilder->build();
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
-$app->setBasePath('/cliques-lia/public');
+$app->setBasePath('/cliques-lia');
 $callableResolver = $app->getCallableResolver();
 
 // Register middleware

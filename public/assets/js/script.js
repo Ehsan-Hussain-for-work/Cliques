@@ -1,4 +1,4 @@
-const apiBase = "/cliques-lia/public";
+const apiBase = "/cliques-lia";
 
 async function updateConsole(url) {
   const outputElement = document.getElementById("json-output");
