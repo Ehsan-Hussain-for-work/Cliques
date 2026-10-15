@@ -20,6 +20,27 @@ paths:
           schema:
             type: string
             example: "QueenOfYasss"
+        - name: email
+          in: query
+          description: Filter users by email
+          required: false
+          schema:
+            type: string
+            example: "johnDoe@gmail.com"
+        - name: creationDate
+          in: query
+          description: Filter users by the time they first registered
+          required: false
+          schema:
+            type: string
+            example: "2026-09-22T20:18:54Z"
+        - name: userBirthday
+          in: query
+          description: Filter users by their registered birthday
+          required: false
+          schema:
+            type: string
+            example: "2000-01-01"
         - name: warningStatus
           in: query
           description: Filter users by warning flag
@@ -28,15 +49,15 @@ paths:
             type: boolean
             example: true
       responses:
-        '200':
+        "200":
           description: A JSON array of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '404':
+                  $ref: "#/components/schemas/User"
+        "404":
           description: User not found
     post:
       summary: Create a new user
@@ -45,15 +66,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
+                $ref: "#/components/schemas/User"
+        "400":
           description: Invalid input
     put:
       summary: Update an existing user
@@ -62,15 +83,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
       responses:
-        '200':
+        "200":
           description: User updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: User not found
     delete:
       summary: Delete a user
@@ -83,9 +104,9 @@ paths:
             type: integer
             example: 68
       responses:
-        '204':
+        "204":
           description: User deleted
-        '404':
+        "404":
           description: User not found
 
   /users/{id}:
@@ -99,13 +120,13 @@ paths:
             type: integer
             example: 68
       responses:
-        '200':
+        "200":
           description: A single user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: User not found
 
   /groups:
@@ -119,15 +140,22 @@ paths:
           schema:
             type: string
             example: "Knights"
+        - name: creationDate
+          in: query
+          description: Filter groups by the date they were created
+          required: false
+          schema:
+            type: string
+            example: "2026-10-22T20:18:54Z"
       responses:
-        '200':
+        "200":
           description: A JSON array of groups
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Group'
+                  $ref: "#/components/schemas/Group"
     post:
       summary: Create a new group
       requestBody:
@@ -135,14 +163,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Group'
+              $ref: "#/components/schemas/Group"
       responses:
-        '201':
+        "201":
           description: Group created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
+                $ref: "#/components/schemas/Group"
     put:
       summary: Update an existing group
       requestBody:
@@ -150,14 +178,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Group'
+              $ref: "#/components/schemas/Group"
       responses:
-        '200':
+        "200":
           description: Group updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
+                $ref: "#/components/schemas/Group"
     delete:
       summary: Delete a group
       parameters:
@@ -168,8 +196,28 @@ paths:
             type: integer
             example: 90
       responses:
-        '204':
+        "204":
           description: Group deleted
+
+  /groups/{id}:
+    get:
+      summary: Get a group by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 66
+      responses:
+        "200":
+          description: A single group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "404":
+          description: Group not found
 
   /messages:
     get:
@@ -182,15 +230,22 @@ paths:
           schema:
             type: integer
             example: 654
+        - name: channelId
+          in: query
+          description: Filter messages by which channel they were sent to
+          required: false
+          schema:
+            type: integer
+            example: 42
       responses:
-        '200':
+        "200":
           description: A JSON array of messages
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Message'
+                  $ref: "#/components/schemas/Message"
     post:
       summary: Create a new message
       requestBody:
@@ -198,14 +253,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: "#/components/schemas/Message"
       responses:
-        '201':
+        "201":
           description: Message created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "#/components/schemas/Message"
     put:
       summary: Update an existing message
       requestBody:
@@ -213,14 +268,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: "#/components/schemas/Message"
       responses:
-        '200':
+        "200":
           description: Message updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                $ref: "#/components/schemas/Message"
     delete:
       summary: Delete a message
       parameters:
@@ -231,8 +286,28 @@ paths:
             type: integer
             example: 1024
       responses:
-        '204':
+        "204":
           description: Message deleted
+
+  /messages/{id}:
+    get:
+      summary: Get a message by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 65
+      responses:
+        "200":
+          description: A single message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: Message not found
 
   # /attachments:
   #   get:
@@ -286,6 +361,13 @@ paths:
     get:
       summary: Get a list of all channels
       parameters:
+        - name: groupId
+          in: query
+          description: Filter channels based on which group they belong to
+          required: false
+          schema:
+            type: integer
+            example: 3
         - name: adultGate
           in: query
           description: Filter channels by adult gate flag
@@ -294,14 +376,14 @@ paths:
             type: boolean
             example: false
       responses:
-        '200':
+        "200":
           description: A JSON array of channels
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Channel'
+                  $ref: "#/components/schemas/Channel"
     post:
       summary: Create a new channel
       requestBody:
@@ -309,14 +391,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Channel'
+              $ref: "#/components/schemas/Channel"
       responses:
-        '201':
+        "201":
           description: Channel created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Channel'
+                $ref: "#/components/schemas/Channel"
     put:
       summary: Update an existing channel
       requestBody:
@@ -324,14 +406,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Channel'
+              $ref: "#/components/schemas/Channel"
       responses:
-        '200':
+        "200":
           description: Channel updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Channel'
+                $ref: "#/components/schemas/Channel"
     delete:
       summary: Delete a channel
       parameters:
@@ -342,8 +424,28 @@ paths:
             type: integer
             example: 207
       responses:
-        '204':
+        "204":
           description: Channel deleted
+
+  /channels/{id}:
+    get:
+      summary: Get a channel by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 64
+      responses:
+        "200":
+          description: A single channel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Channel"
+        "404":
+          description: Channel not found
 
   /memberships:
     get:
@@ -356,15 +458,22 @@ paths:
           schema:
             type: integer
             example: 62
+        - name: channelId
+          in: query
+          description: Filter memberships by channel
+          required: false
+          schema:
+            type: integer
+            example: 61
       responses:
-        '200':
+        "200":
           description: A JSON array of memberships
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Membership'
+                  $ref: "#/components/schemas/Membership"
     post:
       summary: Create a new membership
       requestBody:
@@ -372,14 +481,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Membership'
+              $ref: "#/components/schemas/Membership"
       responses:
-        '201':
+        "201":
           description: Membership created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Membership'
+                $ref: "#/components/schemas/Membership"
     put:
       summary: Update an existing membership
       requestBody:
@@ -387,14 +496,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Membership'
+              $ref: "#/components/schemas/Membership"
       responses:
-        '200':
+        "200":
           description: Membership updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Membership'
+                $ref: "#/components/schemas/Membership"
+
+  # /memberships/user/{id}:
+  #   get:
+  #     summary: Get memberships by user ID
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 53
+  #     responses:
+  #       "200":
+  #         description: User's memberships
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/memberships" #Idk what to put here yet
+  #       "404":
+  #         description: User's memberships not found
 
 components:
   schemas:
@@ -407,21 +536,24 @@ components:
         username:
           type: string
           example: "QueenOfYasss"
+        email:
+          type: string
+          example: "johnDoe@gmail.com"
         creationDate:
           type: string
           format: date-time
-          example: '2026-09-22T20:18:54Z'
+          example: "2026-09-22T20:18:54Z"
         userBirthday:
           type: string
           format: date
-          example: '2026-09-22'
+          example: "2026-09-22"
         warningStatus:
           type: boolean
           example: true
         lastMessage:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
 
     Group:
       type: object
@@ -435,7 +567,7 @@ components:
         creationDate:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
         memberCount:
           type: integer
           example: 5
@@ -445,7 +577,7 @@ components:
         lastMessage:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
         memberships:
           type: array
           items:
@@ -470,11 +602,11 @@ components:
         joinDate:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
         leaveDate:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
 
     Channel:
       type: object
@@ -482,6 +614,9 @@ components:
         id:
           type: integer
           example: 207
+        groupId:
+          type: integer
+          example: 451
         memberships:
           type: array
           items:
@@ -490,7 +625,7 @@ components:
         lastMessage:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
+          example: "2026-09-22T20:23:06Z"
         adultGate:
           type: boolean
           example: false
@@ -498,22 +633,25 @@ components:
     Message:
       type: object
       properties:
+        id:
+          type: integer
+          example: 2098019652193
         body:
           type: string
           example: "😂"
         sendDate:
           type: string
           format: date-time
-          example: '2026-09-22T20:23:06Z'
-        id:
-          type: integer
-          example: 2098019652193
-        edited:
-          type: boolean
-          example: false
+          example: "2026-09-22T20:23:06Z"
         senderId:
           type: integer
           example: 654
+        channelId:
+          type: integer
+          example: 237
+        edited:
+          type: boolean
+          example: false
 
     # Attachment:
     #   type: object
