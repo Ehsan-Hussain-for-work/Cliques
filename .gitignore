@@ -1,0 +1,11 @@
+#alan's environment files
+.idea/
+cliques-lia.code-workspace
+
+#general environment files
+.vscode/
+/coverage/
+/vendor/
+/logs/*
+!/logs/README.md
+.phpunit.result.cache
