@@ -10,6 +10,8 @@ Options All -Indexes
   RewriteEngine On
   RewriteBase /cliques-lia/
   # RewriteRule ^$ public/ [L]
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteRule ^public($|/) - [R=404,L]
   
   RewriteCond %{REQUEST_URI} !^/cliques-lia/public/
   RewriteRule ^(.*)$ public/$1 [L]

@@ -16,8 +16,12 @@ return function (App $app) {
     });
 
     $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
-        return $response;
+        $indexPath = __DIR__ . '/../public/index.html';
+        if (file_exists($indexPath)) {
+            $htmlContent = file_get_contents($indexPath);
+            $response->getBody()->write($htmlContent);
+            return $response->withHeader('Content-Type', 'text/html');
+        }
     });
 
     $app->group('/users', function (Group $group) {
