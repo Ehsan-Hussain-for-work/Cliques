@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cliques API Portal</title>
+        <link rel="stylesheet" href="./assets/style/style.css">
+        <script src="./assets/js/script.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <h1>Cliques Restful Chat Engine</h1>
+            <div class="meta">
+                <strong>Application:</strong> Decoupled Chatroom Core Infrastructure for Platform Integration <br>
+                <strong>Developers:</strong> Ehsan Hussain & Alan Telemishev | 420-511-VA Web Services (Build 1)
+            </div>
+        </header>
+        <section>
+        <h2>Interactive Pipeline Sandbox</h2>
+        <p>Execute live tracking operations below to trace data movement through the application stack layers:</p>
+        
+        <div class="sandbox-controls">
+            <button onclick="fetchCollection()">Execute GET /users</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label for="user-id">User ID:</label>
+            <input type="number" id="user-id" value="1" min="1">
+            <button onclick="fetchIndividual()">Execute GET /users/{id}</button>
+        </div>
+
+        <h3>Response Payload Output (<span id="http-status" class="badge-status">HTTP ---</span>)</h3>
+        <pre id="json-output">// Click a button above to run an asynchronous request lifecycle trace...</pre>
+    </section>
+    <section>
+        <h2>Service Endpoint Map Reference</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Resource Path</th>
+                    <th>Parameters / Filters</th>
+                    <th>Status / Scope</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/users</code></td>
+                    <td>None (Build 1 unpaginated baseline)</td>
+                    <td><span class="badge badge-active">Live (Build 1)</span></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/users/{id}</code></td>
+                    <td><code>id</code> (Path, Integer, Required)</td>
+                    <td><span class="badge badge-active">Live (Build 1)</span></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/users</code></td>
+                    <td>User Object (JSON Body)</td>
+                    <td><code>Planned (Build 2)</code></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/groups</code></td>
+                    <td>Group Object (JSON Body)</td>
+                    <td><code>Planned (Build 2)</code></td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/messages</code></td>
+                    <td>Message Object (JSON Body)</td>
+                    <td><code>Planned (Build 3)</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    </body>
+</html>

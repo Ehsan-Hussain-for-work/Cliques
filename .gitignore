@@ -1,2 +1,8 @@
 #alan's intelliJ files
 .idea/
+.vscode/
+/coverage/
+/vendor/
+/logs/*
+!/logs/README.md
+.phpunit.result.cache
