@@ -1,0 +1,108 @@
+CREATE DATABASE cliques_db
+	CHARACTER SET utf8mb4
+	COLLATE utf8mb4_unicode_ci;
+
+USE cliques_db;
+
+CREATE TABLE users ( 
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    user_email VARCHAR(50) NOT NULL UNIQUE,
+    creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_birthday DATE NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    warning_status BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE groups (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+    creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    adult_gate BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE channels (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    group_id INT NOT NULL,
+    adult_gate BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE memberships (
+	user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    channel_id INT NOT NULL,
+    mod_status BOOLEAN NOT NULL DEFAULT FALSE,
+    join_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    leave_date DATETIME NULL
+);
+
+CREATE TABLE messages (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    body TEXT NOT NULL,
+    sent_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    sender_id INT NOT NULL,
+    channel_id INT NULL,
+    edited BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+/*
+CREATE TABLE attachments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message_id BIGINT NOT NULL,
+    format VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    url VARCHAR(2083) NOT NULL,
+    size_in_kilobytes BIGINT NOT NULL
+);
+*/
+
+
+ALTER TABLE users
+	ADD CONSTRAINT chk_users_email
+    CHECK (user_email LIKE '_%@_%._%');
+    
+ALTER TABLE channels
+	ADD CONSTRAINT fk_channels_group
+    FOREIGN KEY (group_id)
+    REFERENCES groups(id);
+    
+ALTER TABLE channels
+	ADD CONSTRAINT uq_channels_name
+    UNIQUE (name, group_id);
+
+ALTER TABLE memberships
+	ADD CONSTRAINT pk_memberships
+    PRIMARY KEY (user_id, group_id, channel_id);
+    
+ALTER TABLE memberships
+	ADD CONSTRAINT fk_memberships_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id);
+    
+ALTER TABLE memberships
+	ADD CONSTRAINT fk_memberships_group
+    FOREIGN KEY (group_id)
+    REFERENCES groups(id);
+    
+ALTER TABLE memberships
+	ADD CONSTRAINT fk_memberships_channel
+    FOREIGN KEY (channel_id)
+    REFERENCES channels(id);
+
+ALTER TABLE messages
+	ADD CONSTRAINT fk_messages_sender
+    FOREIGN KEY (sender_id)
+    REFERENCES users(id);
+    
+ALTER TABLE messages
+	ADD CONSTRAINT fk_messages_channel
+    FOREIGN KEY (channel_id)
+    REFERENCES channels(id);
+
+/*
+ALTER TABLE attachments
+	ADD CONSTRAINT fk_attachments_message
+    FOREIGN KEY (message_id)
+    REFERENCES messages(id);
+*/
