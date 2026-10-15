@@ -1,5 +1,8 @@
-#alan's intelliJ files
+#alan's environment files
 .idea/
+cliques-lia.code-workspace
+
+#general environment files
 .vscode/
 /coverage/
 /vendor/
