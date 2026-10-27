@@ -2,9 +2,9 @@ openapi: 3.1.0
 info:
   title: Cliques
   description: Chatroom Web Service
-  version: 0.1.0
+  version: 0.2.0
 servers:
-  - url: "https://localhost:8080/api/v0.1"
+  - url: "https://localhost:8080/api/v0.2"
     description: Local Development Server
 
 paths:
@@ -19,35 +19,50 @@ paths:
           required: false
           schema:
             type: string
-            example: "QueenOfYasss"
+            examples: ["QueenOfYasss"]
         - name: email
           in: query
           description: Filter users by email
           required: false
           schema:
             type: string
-            example: "johnDoe@gmail.com"
+            examples: ["johnDoe@gmail.com"]
         - name: creationDate
           in: query
           description: Filter users by the time they first registered
           required: false
           schema:
             type: string
-            example: "2026-09-22T20:18:54Z"
+            examples: ["2026-09-22T20:18:54Z"]
         - name: userBirthday
           in: query
           description: Filter users by their registered birthday
           required: false
           schema:
             type: string
-            example: "2000-01-01"
+            examples: ["2000-01-01"]
         - name: warningStatus
           in: query
           description: Filter users by warning flag
           required: false
           schema:
             type: boolean
-            example: true
+            examples: [true]
+        - name: page
+          in: query
+          description: Filter users by subset of queries in the db
+          required: false
+          schema:
+            type: integer
+            examples: [1, 2, 3, 4, 5]
+        - name: limit
+          in: query
+          description: Filter the amount of users in a page
+          required: false
+          schema:
+            type: integer
+            examples: [10]
+            default: 5
       responses:
         "200":
           description: A JSON array of users
@@ -102,7 +117,7 @@ paths:
           description: ID of the user to delete
           schema:
             type: integer
-            example: 68
+            examples: [68]
       responses:
         "204":
           description: User deleted
@@ -118,7 +133,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 68
+            examples: [68]
       responses:
         "200":
           description: A single user
@@ -139,14 +154,29 @@ paths:
           required: false
           schema:
             type: string
-            example: "Knights"
+            examples: ["Knights"]
         - name: creationDate
           in: query
           description: Filter groups by the date they were created
           required: false
           schema:
             type: string
-            example: "2026-10-22T20:18:54Z"
+            examples: ["2026-10-22T20:18:54Z"]
+        - name: page
+          in: query
+          description: Filter groups by subset of queries in the db
+          required: false
+          schema:
+            type: integer
+            examples: [1, 2, 3, 4, 5]
+        - name: limit
+          in: query
+          description: Filter the amount of groups in a page
+          required: false
+          schema:
+            type: integer
+            examples: [10]
+            default: 5
       responses:
         "200":
           description: A JSON array of groups
@@ -194,7 +224,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 90
+            examples: [90]
       responses:
         "204":
           description: Group deleted
@@ -208,7 +238,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 66
+            examples: [66]
       responses:
         "200":
           description: A single group
@@ -221,7 +251,7 @@ paths:
 
   /messages:
     get:
-      summary: Get a list of all messages
+      summary: Get a subset of messages
       parameters:
         - name: senderId
           in: query
@@ -229,14 +259,29 @@ paths:
           required: false
           schema:
             type: integer
-            example: 654
+            examples: [654]
         - name: channelId
           in: query
           description: Filter messages by which channel they were sent to
           required: false
           schema:
             type: integer
-            example: 42
+            examples: [42]
+        - name: page
+          in: query
+          description: Filter messages by subset of queries in the db
+          required: true
+          schema:
+            type: integer
+            examples: [1, 2, 3, 4, 5]
+        - name: limit
+          in: query
+          description: Filter the amount of messages in a page
+          required: false
+          schema:
+            type: integer
+            examples: [10]
+            default: 5
       responses:
         "200":
           description: A JSON array of messages
@@ -284,7 +329,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 1024
+            examples: [1024]
       responses:
         "204":
           description: Message deleted
@@ -298,7 +343,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 65
+            examples: [65]
       responses:
         "200":
           description: A single message
@@ -319,7 +364,7 @@ paths:
   #         required: false
   #         schema:
   #           type: string
-  #           example: "zip"
+  #           examples: "zip"
   #     responses:
   #       '200':
   #         description: A JSON array of attachments
@@ -352,7 +397,7 @@ paths:
   #         required: true
   #         schema:
   #           type: integer
-  #           example: 207
+  #           examples: 207
   #     responses:
   #       '204':
   #         description: Attachment deleted
@@ -367,14 +412,29 @@ paths:
           required: false
           schema:
             type: integer
-            example: 3
+            examples: [3]
         - name: adultGate
           in: query
           description: Filter channels by adult gate flag
           required: false
           schema:
             type: boolean
-            example: false
+            examples: [false]
+        - name: page
+          in: query
+          description: Filter channels by subset of queries in the db
+          required: false
+          schema:
+            type: integer
+            examples: [1, 2, 3, 4, 5]
+        - name: limit
+          in: query
+          description: Filter the amount of channels in a page
+          required: false
+          schema:
+            type: integer
+            examples: [10]
+            default: 5
       responses:
         "200":
           description: A JSON array of channels
@@ -422,7 +482,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 207
+            examples: [207]
       responses:
         "204":
           description: Channel deleted
@@ -436,7 +496,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 64
+            examples: [64]
       responses:
         "200":
           description: A single channel
@@ -457,14 +517,29 @@ paths:
           required: false
           schema:
             type: integer
-            example: 62
-        - name: channelId
+            examples: [62]
+        - name: userId
           in: query
-          description: Filter memberships by channel
+          description: Filter memberships by users
           required: false
           schema:
             type: integer
-            example: 61
+            examples: [61]
+        - name: page
+          in: query
+          description: Filter memberships by subset of queries in the db
+          required: false
+          schema:
+            type: integer
+            examples: [1, 2, 3, 4, 5]
+        - name: limit
+          in: query
+          description: Filter the amount of memberships in a page
+          required: false
+          schema:
+            type: integer
+            examples: [10]
+            default: 5
       responses:
         "200":
           description: A JSON array of memberships
@@ -514,7 +589,7 @@ paths:
   #         required: true
   #         schema:
   #           type: integer
-  #           example: 53
+  #           examples: 53
   #     responses:
   #       "200":
   #         description: User's memberships
@@ -532,133 +607,133 @@ components:
       properties:
         id:
           type: integer
-          example: 68
+          examples: [68]
         username:
           type: string
-          example: "QueenOfYasss"
+          examples: ["QueenOfYasss"]
         email:
           type: string
-          example: "johnDoe@gmail.com"
+          examples: ["johnDoe@gmail.com"]
         creationDate:
           type: string
           format: date-time
-          example: "2026-09-22T20:18:54Z"
+          examples: ["2026-09-22T20:18:54Z"]
         userBirthday:
           type: string
           format: date
-          example: "2026-09-22"
+          examples: ["2026-09-22"]
         warningStatus:
           type: boolean
-          example: true
+          examples: [true]
         lastMessage:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
 
     Group:
       type: object
       properties:
         id:
           type: integer
-          example: 90
+          examples: [90]
         name:
           type: string
-          example: "Knights of Wonky Table"
+          examples: ["Knights of Wonky Table"]
         creationDate:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
         memberCount:
           type: integer
-          example: 5
+          examples: [5]
         adultGate:
           type: boolean
-          example: false
+          examples: [false]
         lastMessage:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
         memberships:
           type: array
           items:
             type: integer
-          example: [16, 108, 2067, 908817]
+          examples: [16, 108, 2067, 908817]
 
     Membership:
       type: object
       properties:
         userId:
           type: integer
-          example: 54
+          examples: [54]
         groupId:
           type: integer
-          example: 62
+          examples: [62]
         channelId:
           type: integer
-          example: 905
+          examples: [905]
         modStatus:
           type: boolean
-          example: true
+          examples: [true]
         joinDate:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
         leaveDate:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
 
     Channel:
       type: object
       properties:
         id:
           type: integer
-          example: 207
+          examples: [207]
         groupId:
           type: integer
-          example: 451
+          examples: [451]
         memberships:
           type: array
           items:
             type: integer
-          example: [16, 108, 2067, 908817]
+          examples: [16, 108, 2067, 908817]
         lastMessage:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
         adultGate:
           type: boolean
-          example: false
+          examples: [false]
 
     Message:
       type: object
       properties:
         id:
           type: integer
-          example: 2098019652193
+          examples: [2098019652193]
         body:
           type: string
-          example: "😂"
+          examples: ["😂"]
         sendDate:
           type: string
           format: date-time
-          example: "2026-09-22T20:23:06Z"
+          examples: ["2026-09-22T20:23:06Z"]
         senderId:
           type: integer
-          example: 654
+          examples: [654]
         channelId:
           type: integer
-          example: 237
+          examples: [237]
         edited:
           type: boolean
-          example: false
+          examples: [false]
 
     # Attachment:
     #   type: object
     #   properties:
     #     format:
     #       type: string
-    #       example: "zip"
+    #       examples: "zip"
     #     sizeInKilobytes:
     #       type: integer
-    #       example: 2048
+    #       examples: 2048
