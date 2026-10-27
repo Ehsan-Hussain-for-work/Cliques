@@ -54,7 +54,7 @@ paths:
           required: false
           schema:
             type: integer
-            examples: [1, 2, 3, 4, 5]
+            examples: [1,2,3,4,5]
         - name: limit
           in: query
           description: Filter the amount of users in a page
@@ -168,7 +168,7 @@ paths:
           required: false
           schema:
             type: integer
-            examples: [1, 2, 3, 4, 5]
+            examples: [1,2,3,4,5]
         - name: limit
           in: query
           description: Filter the amount of groups in a page
@@ -273,7 +273,7 @@ paths:
           required: true
           schema:
             type: integer
-            examples: [1, 2, 3, 4, 5]
+            examples: [1,2,3,4,5]
         - name: limit
           in: query
           description: Filter the amount of messages in a page
@@ -426,7 +426,7 @@ paths:
           required: false
           schema:
             type: integer
-            examples: [1, 2, 3, 4, 5]
+            examples: [1,2,3,4,5]
         - name: limit
           in: query
           description: Filter the amount of channels in a page
@@ -531,7 +531,7 @@ paths:
           required: false
           schema:
             type: integer
-            examples: [1, 2, 3, 4, 5]
+            examples: [1,2,3,4,5]
         - name: limit
           in: query
           description: Filter the amount of memberships in a page
