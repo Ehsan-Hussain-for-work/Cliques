@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Cliques - Admin Panel</title>
+    <title>Cliques</title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -33,11 +33,11 @@
           <h6 class="text-uppercase text-secondary mt-3 mb-3">Section Menu</h6>
 
           <nav class="nav flex-column" aria-label="Main navigation">
-            <a class="nav-link active" href="#users"> Users </a>
-            <a class="nav-link" href="#groups"> Groups </a>
-            <a class="nav-link" href="#channels"> Channels </a>
-            <a class="nav-link" href="#memberships"> Memberships </a>
-            <a class="nav-link" href="#messages"> Messages </a>
+            <a class="nav-link" href="#users">Users</a>
+            <a class="nav-link" href="#groups">Groups</a>
+            <a class="nav-link" href="#channels">Channels</a>
+            <a class="nav-link" href="#memberships">Memberships</a>
+            <a class="nav-link" href="#messages">Messages</a>
           </nav>
         </aside>
 
@@ -73,9 +73,11 @@
                           id="warningFilter"
                           name="warningStatus"
                         >
-                          <option value="">All Users</option>
-                          <option value="true">Warned</option>
-                          <option value="false">Not Warned</option>
+                          <div>
+                            <option value="">All Users</option>
+                            <option value="true">Warned</option>
+                            <option value="false">Not Warned</option>
+                          </div>
                         </select>
                       </div>
 
@@ -121,12 +123,6 @@
                       </li>
                       <li class="page-item">
                         <a class="page-link" href="#">1</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">3</a>
                       </li>
                       <li class="page-item">
                         <a class="page-link" href="#">Next</a>
@@ -225,6 +221,832 @@
                         type="button"
                         class="btn btn-outline-secondary"
                         id="cancelUserForm"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="groups"
+            class="content-section mb-5 card border-0 shadow-sm"
+          >
+            <h2 class="fw-bold mb-1 card-header">Group Management</h2>
+
+            <div class="card-body">
+              <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Search</h3>
+
+                  <form id="groupFilterForm">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-6">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="groupNameFilter"
+                          name="name"
+                          placeholder="Search group names..."
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <select
+                          class="form-select"
+                          id="groupAdultGateFilter"
+                          name="adultGate"
+                        >
+                          <option value="">All Groups</option>
+                          <option value="true">Adult Restricted</option>
+                          <option value="false">Not Restricted</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Registered Groups</h3>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Group Name</th>
+                          <th scope="col">Creation Date</th>
+                          <th scope="col">Members</th>
+                          <th scope="col">Adult Gate</th>
+                          <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="groupTableBody">
+                        <tr></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <nav
+                    class="d-flex flex-wrap justify-content-center gap-3 mt-3"
+                    aria-label="Group page navigation"
+                  >
+                    <ul class="pagination" id="groupPagination">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+
+              <br />
+
+              <section id="groupFormSection" class="content-section mb-5">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body">
+                    <div
+                      id="groupFormFeedback"
+                      class="alert d-none"
+                      role="alert"
+                      aria-live="assertive"
+                    ></div>
+
+                    <h3 class="card-subtitle mb-2" id="groupFormHeading">
+                      Group Data Submission
+                    </h3>
+
+                    <form id="groupForm" novalidate>
+                      <input type="hidden" id="groupId" name="id" />
+
+                      <div class="mb-3">
+                        <label for="groupName" class="form-label">
+                          Group Name
+                        </label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="groupName"
+                          name="name"
+                          required
+                        />
+
+                        <div id="groupNameError" class="invalid-feedback"></div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="groupMemberships" class="form-label">
+                          Membership IDs
+                        </label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="groupMemberships"
+                          name="memberships"
+                          placeholder="1 2 3"
+                        />
+
+                        <div
+                          id="groupMembershipsError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="groupAdultGate" class="form-label">
+                          Adult Gate
+                        </label>
+
+                        <select
+                          class="form-select"
+                          id="groupAdultGate"
+                          name="adultGate"
+                        >
+                          <option value="false">Not Restricted</option>
+                          <option value="true">Adult Restricted</option>
+                        </select>
+
+                        <div
+                          id="groupAdultGateError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">
+                        Save Group
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="cancelGroupForm"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="channels"
+            class="content-section mb-5 card border-0 shadow-sm"
+          >
+            <h2 class="fw-bold mb-1 card-header">Channel Management</h2>
+
+            <div class="card-body">
+              <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Search</h3>
+
+                  <form id="channelFilterForm">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-6">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="channelGroupFilter"
+                          name="groupId"
+                          placeholder="Search by Group ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <select
+                          class="form-select"
+                          id="channelAdultGateFilter"
+                          name="adultGate"
+                        >
+                          <option value="">All Channels</option>
+                          <option value="true">Adult Restricted</option>
+                          <option value="false">Not Restricted</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Registered Channels</h3>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Group ID</th>
+                          <th scope="col">Memberships</th>
+                          <th scope="col">Adult Gate</th>
+                          <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="channelTableBody">
+                        <tr></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <nav
+                    class="d-flex flex-wrap justify-content-center gap-3 mt-3"
+                    aria-label="Channel page navigation"
+                  >
+                    <ul class="pagination" id="channelPagination">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+
+              <br />
+
+              <section id="channelFormSection" class="content-section mb-5">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body">
+                    <div
+                      id="channelFormFeedback"
+                      class="alert d-none"
+                      role="alert"
+                      aria-live="assertive"
+                    ></div>
+
+                    <h3 class="card-subtitle mb-2" id="channelFormHeading">
+                      Channel Data Submission
+                    </h3>
+
+                    <form id="channelForm" novalidate>
+                      <input type="hidden" id="channelId" name="id" />
+
+                      <div class="mb-3">
+                        <label for="channelGroupId" class="form-label">
+                          Group ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="channelGroupId"
+                          name="groupId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="channelGroupIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="channelMemberships" class="form-label">
+                          Membership IDs
+                        </label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="channelMemberships"
+                          name="memberships"
+                          placeholder="1 2 3"
+                        />
+
+                        <div
+                          id="channelMembershipsError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="channelAdultGate" class="form-label">
+                          Adult Gate
+                        </label>
+
+                        <select
+                          class="form-select"
+                          id="channelAdultGate"
+                          name="adultGate"
+                        >
+                          <option value="false">Not Restricted</option>
+                          <option value="true">Adult Restricted</option>
+                        </select>
+
+                        <div
+                          id="channelAdultGateError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">
+                        Save Channel
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="cancelChannelForm"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="memberships"
+            class="content-section mb-5 card border-0 shadow-sm"
+          >
+            <h2 class="fw-bold mb-1 card-header">Membership Management</h2>
+
+            <div class="card-body">
+              <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Search</h3>
+
+                  <form id="membershipFilterForm">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipUserFilter"
+                          name="userId"
+                          placeholder="User ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipGroupFilter"
+                          name="groupId"
+                          placeholder="Group ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipChannelFilter"
+                          name="channelId"
+                          placeholder="Channel ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Registered Memberships</h3>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">User ID</th>
+                          <th scope="col">Group ID</th>
+                          <th scope="col">Channel ID</th>
+                          <th scope="col">Moderator</th>
+                          <th scope="col">Join Date</th>
+                          <th scope="col">Leave Date</th>
+                          <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="membershipTableBody">
+                        <tr></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <nav
+                    class="d-flex flex-wrap justify-content-center gap-3 mt-3"
+                    aria-label="Membership page navigation"
+                  >
+                    <ul class="pagination" id="membershipPagination">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+
+              <br />
+
+              <section id="membershipFormSection" class="content-section mb-5">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body">
+                    <div
+                      id="membershipFormFeedback"
+                      class="alert d-none"
+                      role="alert"
+                      aria-live="assertive"
+                    ></div>
+
+                    <h3 class="card-subtitle mb-2" id="membershipFormHeading">
+                      Membership Data Submission
+                    </h3>
+
+                    <form id="membershipForm" novalidate>
+                      <div class="mb-3">
+                        <label for="membershipUserId" class="form-label">
+                          User ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipUserId"
+                          name="userId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="membershipUserIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="membershipGroupId" class="form-label">
+                          Group ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipGroupId"
+                          name="groupId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="membershipGroupIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="membershipChannelId" class="form-label">
+                          Channel ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="membershipChannelId"
+                          name="channelId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="membershipChannelIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="membershipModStatus" class="form-label">
+                          Moderator Status
+                        </label>
+
+                        <select
+                          class="form-select"
+                          id="membershipModStatus"
+                          name="modStatus"
+                        >
+                          <option value="false">Regular Member</option>
+                          <option value="true">Moderator</option>
+                        </select>
+
+                        <div
+                          id="membershipModStatusError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="membershipJoinDate" class="form-label">
+                          Join Date
+                        </label>
+
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="membershipJoinDate"
+                          name="joinDate"
+                        />
+
+                        <div
+                          id="membershipJoinDateError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="membershipLeaveDate" class="form-label">
+                          Leave Date
+                        </label>
+
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="membershipLeaveDate"
+                          name="leaveDate"
+                        />
+
+                        <div
+                          id="membershipLeaveDateError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">
+                        Save Membership
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="cancelMembershipForm"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="messages"
+            class="content-section mb-5 card border-0 shadow-sm"
+          >
+            <h2 class="fw-bold mb-1 card-header">Message Management</h2>
+
+            <div class="card-body">
+              <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Search</h3>
+
+                  <form id="messageFilterForm">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="messageSenderFilter"
+                          name="senderId"
+                          placeholder="Sender ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="messageChannelFilter"
+                          name="channelId"
+                          placeholder="Channel ID..."
+                          min="1"
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="messageBodyFilter"
+                          name="body"
+                          placeholder="Search message text..."
+                        />
+                      </div>
+
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <h3 class="card-subtitle mb-2">Registered Messages</h3>
+
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">ID</th>
+                          <th scope="col">Message</th>
+                          <th scope="col">Send Date</th>
+                          <th scope="col">Sender ID</th>
+                          <th scope="col">Channel ID</th>
+                          <th scope="col">Edited</th>
+                          <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                      </thead>
+
+                      <tbody id="messageTableBody">
+                        <tr></tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <nav
+                    class="d-flex flex-wrap justify-content-center gap-3 mt-3"
+                    aria-label="Message page navigation"
+                  >
+                    <ul class="pagination" id="messagePagination">
+                      <li class="page-item disabled">
+                        <a class="page-link" href="#">Previous</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">1</a>
+                      </li>
+                      <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+
+              <br />
+
+              <section id="messageFormSection" class="content-section mb-5">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body">
+                    <div
+                      id="messageFormFeedback"
+                      class="alert d-none"
+                      role="alert"
+                      aria-live="assertive"
+                    ></div>
+
+                    <h3 class="card-subtitle mb-2" id="messageFormHeading">
+                      Message Data Submission
+                    </h3>
+
+                    <form id="messageForm" novalidate>
+                      <input type="hidden" id="messageId" name="id" />
+
+                      <div class="mb-3">
+                        <label for="messageBody" class="form-label">
+                          Message Content
+                        </label>
+
+                        <textarea
+                          class="form-control"
+                          id="messageBody"
+                          name="body"
+                          rows="4"
+                          required
+                        ></textarea>
+
+                        <div
+                          id="messageBodyError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="messageSenderId" class="form-label">
+                          Sender ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="messageSenderId"
+                          name="senderId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="messageSenderIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="messageChannelId" class="form-label">
+                          Channel ID
+                        </label>
+
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="messageChannelId"
+                          name="channelId"
+                          min="1"
+                          required
+                        />
+
+                        <div
+                          id="messageChannelIdError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <div class="mb-4">
+                        <label for="messageEdited" class="form-label">
+                          Edited Status
+                        </label>
+
+                        <select
+                          class="form-select"
+                          id="messageEdited"
+                          name="edited"
+                        >
+                          <option value="false">Not Edited</option>
+                          <option value="true">Edited</option>
+                        </select>
+
+                        <div
+                          id="messageEditedError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary">
+                        Save Message
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        id="cancelMessageForm"
                       >
                         Cancel
                       </button>

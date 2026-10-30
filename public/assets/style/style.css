@@ -5,6 +5,11 @@ body {
 .sidebar {
   min-height: 100vh;
   background-color: #212529;
+
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .sidebar .nav-link {
