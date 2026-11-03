@@ -34,7 +34,9 @@ class UserRepo implements UserRepository
 
     public function findUserOfId(int $id): array
     {
-        $query = 'SELECT id, username, user_email, creation_date, user_birthday, warning_status FROM users WHERE id = :id';
+        $query = 'SELECT id, username, user_email, creation_date, user_birthday, warning_status 
+        FROM users 
+        WHERE id = :id';
 
         $sql = $this->db->query($query);
         $sql->execute(['id' => $id]);
@@ -45,5 +47,25 @@ class UserRepo implements UserRepository
         } else {
             return $user;
         }
+    }
+
+    public function addUser(array $providedData): array
+    {
+        $query = 'INSERT INTO users 
+        (username, user_email, user_birthday, password_hash, warning_status) 
+        VALUES 
+        (:username, :user_email, :user_birthday, :password_hash, :warning_status)';
+
+        $sql = $this->db->prepare($query);
+        $sql->execute([
+            'username' => $providedData['username'],
+            'user_email' => $providedData['user_email'],
+            'user_birthday' => $providedData['user_birthday'],
+            'password_hash' => $providedData['password_hash'],
+            'warning_status' => $providedData['warning_status']
+        ]);
+
+        $createdId = (int) $this->db->lastInsertId();
+        return $this->findUserOfId($createdId);
     }
 }

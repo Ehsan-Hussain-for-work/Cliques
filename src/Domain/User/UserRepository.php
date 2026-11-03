@@ -19,4 +19,9 @@ interface UserRepository
      * @throws UserNotFoundException
      */
     public function findUserOfId(int $id): array;
+
+    /**
+     * @return String[]
+     */
+    public function addUser(array $providedData): array;
 }

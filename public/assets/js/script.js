@@ -19,11 +19,48 @@ async function updateConsole(url) {
   document.addEventListener("DOMContentLoaded", () => {
     fetchUsers();
   });
+
+  document
+    .getElementById("userForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const userData = {
+        username: document.getElementById("username").value,
+        user_email: document.getElementById("user_email").value,
+        user_birthday: document.getElementById("user_birthday").value,
+        user_status: document.getElementById("userWarningStatus").value,
+        password: document.getElementById("userPassword").value,
+      };
+
+      try {
+        const response = await fetch(usersEndpoint, {
+          method: "POST",
+
+          header: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(userData),
+        });
+
+        const result = await response.json();
+
+        //error check here or success message
+
+        document.getElementById("userForm").requestFullscreen();
+
+        fetchUsers();
+      } catch (error) {
+        //error message
+      }
+    });
 }
 
 async function fetchUsers() {
   const response = await fetch(usersEndpoint);
   const users = await response.json();
+
   displayUsers(users);
 }
 
