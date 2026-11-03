@@ -28,14 +28,22 @@ function displayUsers(users) {
 
   tableBody.innerHTML = "";
 
-  users.forEach((element) => {
+  users.forEach((user) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-    <td>${element.id}</td>
-    <td>${element.username}</td>
-    <td>${element.user_email}</td>
-    <td>${element.user_birthday}</td>
-    <td>${element.warning_status == 1 ? "Suspicious Activity" : "No warning"}</td>
+    <td class="text-center">${user.id}</td>
+    <td class="text-center">${user.username}</td>
+    <td class="text-center">${user.user_email}</td>
+    <td class="text-center">${user.user_birthday}</td>
+    <td class="text-center">${user.warning_status == 1 ? "Suspicious Activity" : "No warning"}</td>
+    <td class="text-center">
+      <button class="btn btn-info btn-sm onclick="">
+      Edit
+      </button>
+      <button class="btn btn-danger btn-sm onclick="">
+      Delete
+      </button>
+    </td>
     `;
 
     tableBody.appendChild(row);
@@ -69,8 +77,6 @@ document
 
         body: JSON.stringify(userData),
       });
-
-      const result = await response.json();
 
       //error check here or success message
 
