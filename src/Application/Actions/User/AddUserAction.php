@@ -16,6 +16,10 @@ class AddUserAction extends UserAction
 
         //error handle here
 
+        $addRequest['password_hash'] = password_hash($addRequest['password'], PASSWORD_DEFAULT);
+
+        $addRequest['warning_status'] = filter_var($addRequest['warning_status'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
         $user = $this->userRepository->addUser($addRequest);
 
         return $this->respondWithData($user, 201);

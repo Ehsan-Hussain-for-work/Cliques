@@ -25,11 +25,7 @@ class UserRepo implements UserRepository
 
         $users = $sql->fetchAll();
 
-        if (!$users) {
-            throw new UserNotFoundException();
-        } else {
-            return $users;
-        }
+        return $users;
     }
 
     public function findUserOfId(int $id): array
@@ -38,7 +34,7 @@ class UserRepo implements UserRepository
         FROM users 
         WHERE id = :id';
 
-        $sql = $this->db->query($query);
+        $sql = $this->db->prepare($query);
         $sql->execute(['id' => $id]);
         $user = $sql->fetch();
 
