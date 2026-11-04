@@ -58,6 +58,14 @@ abstract class Action
     }
 
     /**
+     * @return array
+     */
+    protected function getURLData()
+    {
+        return $this->request->getQueryParams();
+    }
+
+    /**
      * @return mixed
      * @throws HttpBadRequestException
      */
@@ -110,4 +118,5 @@ abstract class Action
     {
         return "todo: yaml";
     }
+    //todo This needs to be adjusted before delivery
 }

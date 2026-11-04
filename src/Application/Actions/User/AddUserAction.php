@@ -12,7 +12,7 @@ class AddUserAction extends UserAction
 {
     protected function action(): Response
     {
-        $addRequest = $this->request->getParsedBody();
+        $addRequest = $this->getFormData();
 
         //error handle here
 
