@@ -82,11 +82,32 @@ abstract class Action
 
     protected function respond(ActionPayload $payload): Response
     {
-        $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->response->getBody()->write($json);
+        $media = $this->request->getAttribute('responseFormat', 'application/json');
+        $data = $payload->getData();
 
+        // PSR-17 response factory; mapped $view.
+        $bytes = match ($media) {
+            'application/json' => json_encode($data, JSON_PRETTY_PRINT),
+            'application/xml'  => $this->encodeXml($data),
+            'application/yaml' => $this->encodeYaml($data),
+            default => json_encode($data, JSON_PRETTY_PRINT),
+        };
+        $type = $media === 'application/xml' ? $media . '; charset=utf-8' : $media;
+        $this->response->getBody()->write($bytes);
         return $this->response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus($payload->getStatusCode());
+            ->withHeader('Content-Type', $type)
+            ->withHeader('Vary', 'Accept')
+            ->withHeader('Cache-Control', 'no-store')
+            ->withStatus($payload->getStatusCode());
+    }
+    //todo This needs to be adjusted before delivery
+    private function encodeXml(array $data): string
+    {
+        return "<xml>todo</xml>";
+    }
+    // todo this one too
+    private function encodeYaml(array $data): string
+    {
+        return "todo: yaml";
     }
 }
