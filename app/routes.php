@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use App\Application\Middleware\CollectionQueryMiddleware as CollectionQ;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -27,7 +28,8 @@ return function (App $app) {
     });
 
     $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
+        $group->get('', ListUsersAction::class)
+            ->add(CollectionQ::class);
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
         $group->delete('/{id}', RemoveUserAction::class);
