@@ -174,19 +174,25 @@ async function removeUser(userId) {
 }
 
 async function fetchGroups(page = 1) {
-  const response = await fetch(`${groupsEndpoint}?page=${page}`);
-  const payload = await response.json();
+  try {
+    const response = await fetch(`${groupsEndpoint}?page=${page}`);
+    const payload = await response.json();
 
-  const groups = payload.data;
-  const metadata = payload.metadata;
+    const groups = payload.data;
+    const metadata = payload.metadata;
 
-  // const result = payload.data;
+    // const result = payload.data;
 
-  currentGroupsPage = metadata.current_page;
+    currentGroupsPage = metadata.current_page;
 
-  displayGroups(groups);
+    displayGroups(groups);
 
-  updatePagination(metadata, "group", fetchGroups);
+    updatePagination(metadata, "group", fetchGroups);
+  } catch (error) {
+    console.error("Failed to fetch groups:", error);
+    document.getElementById("groupTableBody").innerHTML =
+      "<tr><td colspan='5' class='text-center'>Failed to load groups. Please try again later.</td></tr>";
+  }
 }
 
 function displayGroups(groups) {
