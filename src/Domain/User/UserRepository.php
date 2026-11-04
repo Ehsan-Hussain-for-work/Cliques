@@ -34,4 +34,9 @@ interface UserRepository
      * @return bool
      */
     public function removeUser(int $id): bool;
+
+    /**
+     * @return array The paginated and enveloped response data
+     */
+    public function page(array $query): array;
 }

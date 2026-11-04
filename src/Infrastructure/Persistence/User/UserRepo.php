@@ -8,6 +8,7 @@ use App\Domain\User\UserNotFoundException;
 use App\Domain\User\UserRepository;
 use Override;
 use PDO;
+use App\Application\Support\UserCollectionQuery;
 
 class UserRepo implements UserRepository
 {
@@ -31,7 +32,7 @@ class UserRepo implements UserRepository
 
     public function findAll(int $limit, int $offset): array
     {
-        $query = 'SELECT * 
+        $query = 'SELECT `id`, `username`, `user_email`, `creation_date`, `user_birthday`, `warning_status` 
         FROM users 
         ORDER BY id ASC 
         LIMIT :limit OFFSET :offset';
@@ -100,5 +101,35 @@ class UserRepo implements UserRepository
         } else {
             return false;
         }
+    }
+
+    private function execute(string $sql, array $params): \PDOStatement
+    {
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $name => $value) {
+            $stmt->bindValue(':' . $name, $value,
+                is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+        $stmt->execute();
+        return $stmt;
+    }
+
+        public function page(array $query): array
+    {
+        $plan = UserCollectionQuery::plan($query);
+        
+        $total = (int) $this->execute($plan['countSql'], $plan['filters'])->fetchColumn();
+        $rows = $this->execute($plan['sql'], $plan['params'])->fetchAll(PDO::FETCH_ASSOC);
+        
+        $items = array_map(static fn(array $r): array => [
+            'id' => (int) $r['id'], 
+            'username' => $r['username'],
+            'user_email' => $r['user_email'],
+            'creation_date' => $r['creation_date'],
+            'user_birthday' => $r['user_birthday'],
+            'warning_status' => (int) $r['warning_status']
+        ], $rows);
+        
+        return UserCollectionQuery::envelope($items, $query, $total);
     }
 }
