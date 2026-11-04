@@ -6,6 +6,7 @@ namespace App\Infrastructure\Persistence\User;
 
 use App\Domain\User\UserNotFoundException;
 use App\Domain\User\UserRepository;
+use Override;
 use PDO;
 
 class UserRepo implements UserRepository
@@ -81,5 +82,23 @@ class UserRepo implements UserRepository
 
         $createdId = (int) $this->db->lastInsertId();
         return $this->findIdUser($createdId);
+    }
+
+    #[Override]
+    public function removeUser(int $id): bool
+    {
+        $query = 'DELETE FROM users WHERE id = :id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'id' => $id
+        ]);
+
+        if ($sql->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

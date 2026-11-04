@@ -94,12 +94,12 @@ function displayUsers(users) {
     <td class="text-center">${user.username}</td>
     <td class="text-center">${user.user_email}</td>
     <td class="text-center">${user.user_birthday}</td>
-    <td class="text-center">${user.warning_status == 1 ? "Suspicious Activity" : "No warning"}</td>
+    <td class="text-center">${user.warning_status == 1 ? "Warned" : "No warning"}</td>
     <td class="text-center">
-      <button class="btn btn-info btn-sm onclick="">
+      <button class="btn btn-info btn-sm" onclick="">
       Edit
       </button>
-      <button class="btn btn-danger btn-sm onclick="">
+      <button class="btn btn-danger btn-sm" onclick="removeUser(${user.id})">
       Delete
       </button>
     </td>
@@ -142,7 +142,20 @@ document
       document.getElementById("userForm").reset();
 
       fetchUsers(currentPage);
-    } catch (error) {
+    } catch {
       //error message
     }
   });
+
+async function removeUser(userId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${usersEndpoint}/${userId}`, {
+      method: "DELETE",
+    });
+
+    fetchUsers(currentPage);
+  } catch {
+    //error message here
+  }
+}

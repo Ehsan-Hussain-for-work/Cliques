@@ -29,4 +29,9 @@ interface UserRepository
      * @return String[]
      */
     public function addUser(array $providedData): array;
+
+    /**
+     * @return bool
+     */
+    public function removeUser(int $id): bool;
 }
