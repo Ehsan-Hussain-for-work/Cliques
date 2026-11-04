@@ -1,6 +1,8 @@
 const apiBase = "/cliques-lia";
 const usersEndpoint = `${apiBase}/users`;
-let currentPage = 1;
+const groupsEndpoint = `${apiBase}/groups`;
+let currentUsersPage,
+  currentGroupsPage = 1;
 
 async function updateConsole(url) {
   const outputElement = document.getElementById("json-output");
@@ -16,19 +18,6 @@ async function updateConsole(url) {
     statusElement.innerText = "HTTP 500 Connection Error";
     outputElement.innerText = `Network trace extraction failed:\n${error.message}`;
   }
-}
-
-async function fetchUsers(page = 1) {
-  const response = await fetch(`${usersEndpoint}?page=${page}`);
-  const payload = await response.json();
-
-  const result = payload.data;
-
-  currentPage = result.metadata.current_page;
-
-  displayUsers(result.data);
-
-  updatePagination(result.metadata, "user", fetchUsers);
 }
 
 function updatePagination(metadata, type, functionName) {
@@ -82,6 +71,19 @@ function updatePagination(metadata, type, functionName) {
   pagination.appendChild(nextButton);
 }
 
+async function fetchUsers(page = 1) {
+  const response = await fetch(`${usersEndpoint}?page=${page}`);
+  const payload = await response.json();
+
+  const result = payload.data;
+
+  currentUsersPage = result.metadata.current_page;
+
+  displayUsers(result.data);
+
+  updatePagination(result.metadata, "user", fetchUsers);
+}
+
 function displayUsers(users) {
   const tableBody = document.getElementById("userTableBody");
 
@@ -111,6 +113,7 @@ function displayUsers(users) {
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchUsers();
+  fetchGroups();
 });
 
 document
@@ -141,7 +144,7 @@ document
 
       document.getElementById("userForm").reset();
 
-      fetchUsers(currentPage);
+      fetchUsers(currentUsersPage);
     } catch {
       //error message
     }
@@ -154,7 +157,91 @@ async function removeUser(userId) {
       method: "DELETE",
     });
 
-    fetchUsers(currentPage);
+    fetchUsers(currentUsersPage);
+  } catch {
+    //error message here
+  }
+}
+
+async function fetchGroups(page = 1) {
+  const response = await fetch(`${groupsEndpoint}?page=${page}`);
+  const payload = await response.json();
+
+  const result = payload.data;
+
+  currentGroupsPage = result.metadata.current_page;
+
+  displayGroups(result.data);
+
+  updatePagination(result.metadata, "group", fetchGroups);
+}
+
+function displayGroups(groups) {
+  const tableBody = document.getElementById("groupTableBody");
+
+  tableBody.innerHTML = "";
+
+  groups.forEach((group) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+    <td class="text-center">${group.id}</td>
+    <td class="text-center">${group.name}</td>
+    <td class="text-center">${group.creation_date}</td>
+    <td class="text-center">${group.adult_gate == 1 ? "Adult only" : "All ages"}</td>
+    <td class="text-center">
+      <button class="btn btn-info btn-sm" onclick="">
+      Edit
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="removeGroup(${group.id})">
+      Delete
+      </button>
+    </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+document
+  .getElementById("groupForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const groupData = {
+      name: document.getElementById("groupName").value,
+      creation_date: document.getElementById("groupCreationDate").value,
+      adult_gate: document.getElementById("groupAdultGate").value,
+    };
+
+    try {
+      const response = await fetch(groupsEndpoint, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(groupData),
+      });
+
+      //error check here or success message
+
+      document.getElementById("groupForm").reset();
+
+      fetchGroups(currentGroupsPage);
+    } catch {
+      //error message
+    }
+  });
+
+async function removeGroup(groupId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${groupsEndpoint}/${groupId}`, {
+      method: "DELETE",
+    });
+
+    fetchGroups(currentGroupsPage);
   } catch {
     //error message here
   }

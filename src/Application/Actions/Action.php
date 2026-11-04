@@ -58,6 +58,14 @@ abstract class Action
     }
 
     /**
+     * @return array
+     */
+    protected function getURLData()
+    {
+        return $this->request->getQueryParams();
+    }
+
+    /**
      * @return mixed
      * @throws HttpBadRequestException
      */
@@ -86,7 +94,7 @@ abstract class Action
         $this->response->getBody()->write($json);
 
         return $this->response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus($payload->getStatusCode());
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($payload->getStatusCode());
     }
 }

@@ -13,9 +13,9 @@ class ListUsersAction extends UserAction
      */
     protected function action(): Response
     {
-        $params = $this->request->getQueryParams();
+        $data = $this->getURLData();
 
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
+        $page = isset($data['page']) ? (int)$data['page'] : 1;
 
         $limit = 5;
 
