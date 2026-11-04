@@ -72,16 +72,26 @@ function updatePagination(metadata, type, functionName) {
 }
 
 async function fetchUsers(page = 1) {
-  const response = await fetch(`${usersEndpoint}?page=${page}`);
-  const payload = await response.json();
+  try {
+    const response = await fetch(`${usersEndpoint}?page=${page}`);
+    const payload = await response.json();
 
-  const result = payload.data;
+    const usersArray = payload.items;
 
-  currentUsersPage = result.metadata.current_page;
+    const metadata = {
+      current_page: payload.page.number,
+      total_pages: payload.page.totalPages,
+    };
+    currentUsersPage = metadata.current_page;
 
-  displayUsers(result.data);
+    displayUsers(usersArray);
 
-  updatePagination(result.metadata, "user", fetchUsers);
+    updatePagination(metadata, "user", fetchUsers);
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+    document.getElementById("userTableBody").innerHTML =
+      "<tr><td colspan='6' class='text-center'>Failed to load users. Please try again later.</td></tr>";
+  }
 }
 
 function displayUsers(users) {
@@ -167,13 +177,16 @@ async function fetchGroups(page = 1) {
   const response = await fetch(`${groupsEndpoint}?page=${page}`);
   const payload = await response.json();
 
-  const result = payload.data;
+  const groups = payload.data;
+  const metadata = payload.metadata;
 
-  currentGroupsPage = result.metadata.current_page;
+  // const result = payload.data;
 
-  displayGroups(result.data);
+  currentGroupsPage = metadata.current_page;
 
-  updatePagination(result.metadata, "group", fetchGroups);
+  displayGroups(groups);
+
+  updatePagination(metadata, "group", fetchGroups);
 }
 
 function displayGroups(groups) {
