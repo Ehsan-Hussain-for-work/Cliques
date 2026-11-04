@@ -31,7 +31,7 @@ class UserRepo implements UserRepository
 
     public function findAll(int $limit, int $offset): array
     {
-        $query = 'SELECT * 
+        $query = 'SELECT `id`, `username`, `user_email`, `creation_date`, `user_birthday`, `warning_status` 
         FROM users 
         ORDER BY id ASC 
         LIMIT :limit OFFSET :offset';
