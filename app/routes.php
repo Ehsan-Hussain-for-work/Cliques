@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Actions\User\RemoveUserAction;
 use App\Application\Actions\User\AddUserAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\ViewUserAction;
@@ -29,5 +30,6 @@ return function (App $app) {
         $group->get('', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
+        $group->delete('/{id}', RemoveUserAction::class);
     });
 };
