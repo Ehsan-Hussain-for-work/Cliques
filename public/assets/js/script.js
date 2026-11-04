@@ -1,5 +1,6 @@
 const apiBase = "/cliques-lia";
 const usersEndpoint = `${apiBase}/users`;
+let currentPage = 1;
 
 async function updateConsole(url) {
   const outputElement = document.getElementById("json-output");
@@ -17,10 +18,68 @@ async function updateConsole(url) {
   }
 }
 
-async function fetchUsers() {
-  const response = await fetch(usersEndpoint);
+async function fetchUsers(page = 1) {
+  const response = await fetch(`${usersEndpoint}?page=${page}`);
   const payload = await response.json();
-  displayUsers(payload.data);
+
+  const result = payload.data;
+
+  currentPage = result.metadata.current_page;
+
+  displayUsers(result.data);
+
+  updatePagination(result.metadata, "user", fetchUsers);
+}
+
+function updatePagination(metadata, type, functionName) {
+  const pagination = document.getElementById(type.concat("Pagination"));
+
+  pagination.innerHTML = "";
+
+  const previousButton = document.createElement("button");
+
+  previousButton.innerText = "Previous";
+
+  if (metadata.current_page <= 1) {
+    previousButton.disabled = true;
+  } else {
+    previousButton.disabled = false;
+  }
+
+  previousButton.addEventListener("click", () => {
+    functionName(metadata.current_page - 1);
+  });
+
+  pagination.appendChild(previousButton);
+
+  for (let num = 1; num <= metadata.total_pages; num++) {
+    const pageButton = document.createElement("button");
+
+    pageButton.innerText = num;
+
+    if (num === metadata.current_page) {
+      pageButton.disabled = true;
+    } else {
+      pageButton.disabled = false;
+    }
+
+    pageButton.addEventListener("click", () => {
+      functionName(num);
+    });
+
+    pagination.appendChild(pageButton);
+  }
+
+  const nextButton = document.createElement("button");
+
+  nextButton.innerText = "Next";
+  nextButton.disabled = metadata.current_page >= metadata.total_pages;
+
+  nextButton.addEventListener("click", () => {
+    functionName(metadata.current_page + 1);
+  });
+
+  pagination.appendChild(nextButton);
 }
 
 function displayUsers(users) {
@@ -63,7 +122,7 @@ document
       username: document.getElementById("userUsername").value,
       user_email: document.getElementById("userEmail").value,
       user_birthday: document.getElementById("userBirthday").value,
-      user_status: document.getElementById("warningStatus").value,
+      warning_status: document.getElementById("warningStatus").value,
       password: document.getElementById("userPassword").value,
     };
 
@@ -82,7 +141,7 @@ document
 
       document.getElementById("userForm").reset();
 
-      fetchUsers();
+      fetchUsers(currentPage);
     } catch (error) {
       //error message
     }

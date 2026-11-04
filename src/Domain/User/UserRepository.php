@@ -9,16 +9,21 @@ use App\Domain\User\UserNotFoundException;
 interface UserRepository
 {
     /**
+     * @return int
+     */
+    public function countAll(): int;
+
+    /**
      * @return String[]
      */
-    public function findAll(): array;
+    public function findAll(int $limit, int $offset): array;
 
     /**
      * @param int $id
      * @return String[]
      * @throws UserNotFoundException
      */
-    public function findUserOfId(int $id): array;
+    public function findIdUser(int $id): array;
 
     /**
      * @return String[]

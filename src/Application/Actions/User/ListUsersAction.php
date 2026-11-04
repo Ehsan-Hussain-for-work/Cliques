@@ -13,10 +13,37 @@ class ListUsersAction extends UserAction
      */
     protected function action(): Response
     {
-        $users = $this->userRepository->findAll();
+        $params = $this->request->getQueryParams();
 
-        $this->logger->info("Users list was viewed.");
+        $page = isset($params['page']) ? (int)$params['page'] : 1;
 
-        return $this->respondWithData($users);
+        $limit = 5;
+
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $offset = ($page - 1) * $limit;
+
+        $allUsers = $this->userRepository->countAll();
+
+        $allPages = (int) ceil($allUsers / $limit);
+
+        if ($allPages > 0 && $page > $allPages) {
+            $page = $allPages;
+            $offset = ($page - 1) * $limit;
+        }
+
+        $users = $this->userRepository->findAll($limit, $offset);
+
+        return $this->respondWithData([
+            'metadata' => [
+                'total_items' => $allUsers,
+                'total_pages' => $allPages,
+                'current_page' => $page,
+                'per_page' => $limit
+            ],
+            'data' => $users
+        ]);
     }
 }
