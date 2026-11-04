@@ -10,6 +10,10 @@ use App\Application\Actions\Group\RemoveGroupAction;
 use App\Application\Actions\Group\AddGroupAction;
 use App\Application\Actions\Group\ListGroupsAction;
 use App\Application\Actions\Group\ViewGroupAction;
+use App\Application\Actions\Channel\RemoveChannelAction;
+use App\Application\Actions\Channel\AddChannelAction;
+use App\Application\Actions\Channel\ListChannelsAction;
+use App\Application\Actions\Channel\ViewChannelAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -42,5 +46,12 @@ return function (App $app) {
         $group->get('/{id}', ViewGroupAction::class);
         $group->post('', AddGroupAction::class);
         $group->delete('/{id}', RemoveGroupAction::class);
+    });
+
+    $app->group('/channels', function (Group $group) {
+        $group->get('', ListChannelsAction::class);
+        $group->get('/{id}', ViewChannelAction::class);
+        $group->post('', AddChannelAction::class);
+        $group->delete('/{id}', RemoveChannelAction::class);
     });
 };
