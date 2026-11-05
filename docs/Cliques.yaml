@@ -65,15 +65,22 @@ paths:
             default: 5
       responses:
         "200":
-          description: A JSON array of users
+          description: Successfully retrieved users.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
-        "404":
-          description: User not found
+                type: object
+                description: Paginated collection of users.
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
+
     post:
       summary: Create a new user
       requestBody:
@@ -84,13 +91,24 @@ paths:
               $ref: "#/components/schemas/User"
       responses:
         "201":
-          description: User created
+          description: User created.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+
         "400":
-          description: Invalid input
+          $ref: "#/components/responses/BadRequest"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+        # "409":
+        #   $ref: "#/components/responses/Conflict"
+
     put:
       summary: Update an existing user
       requestBody:
@@ -101,13 +119,23 @@ paths:
               $ref: "#/components/schemas/User"
       responses:
         "200":
-          description: User updated
+          description: User updated.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
         "404":
-          description: User not found
+          $ref: "#/components/responses/ResourceNotFound"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
     delete:
       summary: Delete a user
       parameters:
@@ -120,9 +148,19 @@ paths:
             examples: [68]
       responses:
         "204":
-          description: User deleted
+          description: User successfully deleted.
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
         "404":
-          description: User not found
+          $ref: "#/components/responses/ResourceNotFound"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /users/{id}:
     get:
@@ -136,13 +174,23 @@ paths:
             examples: [68]
       responses:
         "200":
-          description: A single user
+          description: Successfully retrieved user.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
         "404":
-          description: User not found
+          $ref: "#/components/responses/ResourceNotFound"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /groups:
     get:
@@ -179,13 +227,23 @@ paths:
             default: 5
       responses:
         "200":
-          description: A JSON array of groups
+          description: Successfully retrieved groups.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Group"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
+
     post:
       summary: Create a new group
       requestBody:
@@ -241,13 +299,23 @@ paths:
             examples: [66]
       responses:
         "200":
-          description: A single group
+          description: Successfully retrieved group.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Group"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
         "404":
-          description: Group not found
+          $ref: "#/components/responses/ResourceNotFound"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /messages:
     get:
@@ -451,13 +519,23 @@ paths:
             examples: [64]
       responses:
         "200":
-          description: A single channel
+          description: Successfully retrieved channel.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Channel"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
         "404":
-          description: Channel not found
+          $ref: "#/components/responses/ResourceNotFound"
+
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /memberships:
     get:
@@ -679,3 +757,134 @@ components:
         edited:
           type: boolean
           examples: [false]
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - error
+      properties:
+        statusCode:
+          type: integer
+          description: HTTP status code associated with the error.
+          examples: [404]
+
+        error:
+          type: object
+          required:
+            - type
+            - description
+          properties:
+            type:
+              type: string
+              description: Classification of the error.
+              enum:
+                - BAD_REQUEST
+                - INSUFFICIENT_PRIVILEGES
+                - NOT_ALLOWED
+                - NOT_IMPLEMENTED
+                - RESOURCE_NOT_FOUND
+                - SERVER_ERROR
+                - UNAUTHENTICATED
+                - VALIDATION_ERROR
+                - VERIFICATION_ERROR
+              examples: ["RESOURCE_NOT_FOUND"]
+
+            description:
+              type:
+                - string
+                - "null"
+              description: Explanation of what caused the error.
+              examples:
+                - "The user you requested does not exist."
+
+  responses:
+    BadRequest:
+      description: The request contains invalid parameters or malformed data.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            statusCode: 400
+            error:
+              type: BAD_REQUEST
+              description: The request contains invalid or malformed information.
+
+    ResourceNotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            statusCode: 404
+            error:
+              type: RESOURCE_NOT_FOUND
+              description: The requested resource does not exist.
+
+    MethodNotAllowed:
+      description: The HTTP method is not supported by this endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            statusCode: 405
+            error:
+              type: NOT_ALLOWED
+              description: The requested HTTP method is not allowed.
+
+    ServerError:
+      description: An unexpected server-side error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            statusCode: 500
+            error:
+              type: SERVER_ERROR
+              description: An internal error has occurred while processing your request.
+
+    # Unauthorized:
+    #   description: Authentication is required or invalid.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
+
+    # Forbidden:
+    #   description: The client has sufficient privileges.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
+
+    # NotAcceptable:
+    #   description: The response format is unsupported.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
+
+    # Conflict:
+    #   description: The operation conflicts with registered data.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
+
+    # ValidationError:
+    #   description: The data failed to validate.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
+
+    # NotImplemented:
+    #   description: The functionality is not implemented.
+    #   content:
+    #     application/json:
+    #       schema:
+    #         $ref: "#/components/schemas/ErrorResponse"
