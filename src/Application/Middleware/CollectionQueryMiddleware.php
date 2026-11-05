@@ -26,8 +26,8 @@ final class CollectionQueryMiddleware implements MiddlewareInterface
     }
     public function process(Request $request, Handler $next): Response
     {
-        $id = bin2hex(random_bytes(8));
-        $request = $request->withAttribute('requestId', $id);
+        // $id = bin2hex(random_bytes(8));
+        // $request = $request->withAttribute('requestId', $id);
         try {
             $rawQuery = $request->getUri()->getQuery();
             // $query = UserCollectionQuery::parse($rawQuery);
@@ -37,7 +37,7 @@ final class CollectionQueryMiddleware implements MiddlewareInterface
         }
 
         $request = $request->withAttribute('collectionQuery', $query);
-        $response = $next->handle($request);
-        return $response->withHeader('X-Requested-ID', $id);
+        return $next->handle($request);
+        // return $response->withHeader('X-Requested-ID', $id);
     }
 }
