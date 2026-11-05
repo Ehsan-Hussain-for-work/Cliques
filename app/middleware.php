@@ -10,5 +10,11 @@ return function (App $app) {
     $app->add(SessionMiddleware::class);
     $app->addRoutingMiddleware();
     $app->add(ContentNegotiationMiddleware::class);
-    $app->addErrorMiddleware(true, true, true);
+    $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+    $errorMiddleware->setDefaultErrorHandler(
+        new \App\Application\Handlers\HttpErrorHandler(
+            $app->getCallableResolver(),
+            $app->getResponseFactory()
+        )
+    );
 };
