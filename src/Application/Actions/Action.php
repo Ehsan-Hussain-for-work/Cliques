@@ -126,8 +126,8 @@ abstract class Action
 
     private function encodeYaml(array $data): string
     {
-        //4 = max inline dept & 2 = spaces per indent
-        return Yaml::dump($data, 4, 2);
+        //5 = max inline dept & 3 = spaces per indent
+        return Yaml::dump($data, 5, 3);
     }
 
     private function arrayToXml(array $data, \XMLWriter $xml): void
