@@ -21,6 +21,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use App\Application\Middleware\CollectionQueryMiddleware as CollectionQ;
 use App\Application\Support\UserCollectionQuery;
 use App\Application\Support\GroupCollectionQuery;
+use App\Application\Actions\User\UpdateUserAction;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -42,6 +43,7 @@ return function (App $app) {
             ->add(new CollectionQ(UserCollectionQuery::class));
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
+        $group->put('/{id}', UpdateUserAction::class);
         $group->delete('/{id}', RemoveUserAction::class);
     });
 
