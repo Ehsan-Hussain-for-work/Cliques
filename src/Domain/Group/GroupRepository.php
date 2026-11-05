@@ -34,4 +34,6 @@ interface GroupRepository
      * @return bool
      */
     public function removeGroup(int $id): bool;
+
+    public function page(array $query): array;
 }

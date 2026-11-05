@@ -8,6 +8,7 @@ use App\Domain\Group\GroupNotFoundException;
 use App\Domain\Group\GroupRepository;
 use Override;
 use PDO;
+use App\Application\Support\GroupCollectionQuery;
 
 class GroupModel implements GroupRepository
 {
@@ -97,5 +98,35 @@ class GroupModel implements GroupRepository
         } else {
             return false;
         }
+    }
+
+    private function execute(string $sql, array $params): \PDOStatement
+    {
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $name => $value) {
+            $stmt->bindValue(
+                ':' . $name,
+                $value,
+                is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR
+            );
+        }
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function page(array $query): array
+    {
+        $plan = GroupCollectionQuery::plan($query);
+        $total = (int) $this->execute($plan['countSql'], $plan['filters'])->fetchColumn();
+        $rows = $this->execute($plan['sql'], $plan['params'])->fetchAll(PDO::FETCH_ASSOC);
+
+        $items = array_map(static fn(array $r): array => [
+            'id' => (int) $r['id'],
+            'name' => $r['name'],
+            'creation_date' => $r['creation_date'],
+            'adult_gate' => (bool) $r['adult_gate']
+        ], $rows);
+
+        return GroupCollectionQuery::envelope($items, $query, $total);
     }
 }
