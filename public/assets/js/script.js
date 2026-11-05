@@ -1,6 +1,10 @@
 const apiBase = "/cliques-lia";
 const usersEndpoint = `${apiBase}/users`;
-let currentPage = 1;
+const groupsEndpoint = `${apiBase}/groups`;
+const channelsEndpoint = `${apiBase}/channels`;
+let currentUsersPage,
+  currentGroupsPage,
+  currentChannelsPage = 1;
 
 async function updateConsole(url) {
   const outputElement = document.getElementById("json-output");
@@ -16,19 +20,6 @@ async function updateConsole(url) {
     statusElement.innerText = "HTTP 500 Connection Error";
     outputElement.innerText = `Network trace extraction failed:\n${error.message}`;
   }
-}
-
-async function fetchUsers(page = 1) {
-  const response = await fetch(`${usersEndpoint}?page=${page}`);
-  const payload = await response.json();
-
-  const result = payload.data;
-
-  currentPage = result.metadata.current_page;
-
-  displayUsers(result.data);
-
-  updatePagination(result.metadata, "user", fetchUsers);
 }
 
 function updatePagination(metadata, type, functionName) {
@@ -82,6 +73,35 @@ function updatePagination(metadata, type, functionName) {
   pagination.appendChild(nextButton);
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  fetchUsers();
+  fetchGroups();
+  fetchChannels();
+});
+
+async function fetchUsers(page = 1) {
+  try {
+    const response = await fetch(`${usersEndpoint}?page=${page}`);
+    const payload = await response.json();
+
+    const usersArray = payload.items;
+
+    const metadata = {
+      current_page: payload.page.number,
+      total_pages: payload.page.totalPages,
+    };
+    currentUsersPage = metadata.current_page;
+
+    displayUsers(usersArray);
+
+    updatePagination(metadata, "user", fetchUsers);
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+    document.getElementById("userTableBody").innerHTML =
+      "<tr><td colspan='6' class='text-center'>Failed to load users. Please try again later.</td></tr>";
+  }
+}
+
 function displayUsers(users) {
   const tableBody = document.getElementById("userTableBody");
 
@@ -109,9 +129,18 @@ function displayUsers(users) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetchUsers();
-});
+async function removeUser(userId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${usersEndpoint}/${userId}`, {
+      method: "DELETE",
+    });
+
+    fetchUsers(currentUsersPage);
+  } catch {
+    //error message here
+  }
+}
 
 document
   .getElementById("userForm")
@@ -141,21 +170,185 @@ document
 
       document.getElementById("userForm").reset();
 
-      fetchUsers(currentPage);
+      fetchUsers(currentUsersPage);
     } catch {
       //error message
     }
   });
 
-async function removeUser(userId) {
+async function fetchGroups(page = 1) {
+  try {
+    const response = await fetch(`${groupsEndpoint}?page=${page}`);
+    const payload = await response.json();
+
+    const groups = payload.data;
+    const metadata = payload.metadata;
+
+    // const result = payload.data;
+
+    currentGroupsPage = metadata.current_page;
+
+    displayGroups(groups);
+
+    updatePagination(metadata, "group", fetchGroups);
+  } catch (error) {
+    console.error("Failed to fetch groups:", error);
+    document.getElementById("groupTableBody").innerHTML =
+      "<tr><td colspan='5' class='text-center'>Failed to load groups. Please try again later.</td></tr>";
+  }
+}
+
+function displayGroups(groups) {
+  const tableBody = document.getElementById("groupTableBody");
+
+  tableBody.innerHTML = "";
+
+  groups.forEach((group) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+    <td class="text-center">${group.id}</td>
+    <td class="text-center">${group.name}</td>
+    <td class="text-center">${group.creation_date}</td>
+    <td class="text-center">${group.adult_gate == 1 ? "Adult only" : "All ages"}</td>
+    <td class="text-center">
+      <button class="btn btn-info btn-sm" onclick="">
+      Edit
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="removeGroup(${group.id})">
+      Delete
+      </button>
+    </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+async function removeGroup(groupId) {
   //confirmation message?
   try {
-    const response = await fetch(`${usersEndpoint}/${userId}`, {
+    const response = await fetch(`${groupsEndpoint}/${groupId}`, {
       method: "DELETE",
     });
 
-    fetchUsers(currentPage);
+    fetchGroups(currentGroupsPage);
   } catch {
     //error message here
   }
 }
+
+document
+  .getElementById("groupForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const groupData = {
+      name: document.getElementById("groupName").value,
+      creation_date: document.getElementById("groupCreationDate").value,
+      adult_gate: document.getElementById("groupAdultGate").value,
+    };
+
+    try {
+      const response = await fetch(groupsEndpoint, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(groupData),
+      });
+
+      //error check here or success message
+
+      document.getElementById("groupForm").reset();
+
+      fetchGroups(currentGroupsPage);
+    } catch {
+      //error message
+    }
+  });
+
+async function fetchChannels(page = 1) {
+  const response = await fetch(`${channelsEndpoint}?page=${page}`);
+  const payload = await response.json();
+
+  const result = payload.data;
+
+  currentChannelsPage = result.metadata.current_page;
+
+  displayChannels(result.data);
+
+  updatePagination(result.metadata, "channel", fetchChannels);
+}
+
+function displayChannels(channels) {
+  const tableBody = document.getElementById("channelTableBody");
+
+  tableBody.innerHTML = "";
+
+  channels.forEach((channel) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+    <td class="text-center">${channel.id}</td>
+    <td class="text-center">${channel.name}</td>
+    <td class="text-center">${channel.group_id}</td>
+    <td class="text-center">${channel.adult_gate == 1 ? "Adult only" : "All ages"}</td>
+    <td class="text-center">
+      <button class="btn btn-info btn-sm" onclick="">
+      Edit
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="removeChannel(${channel.id})">
+      Delete
+      </button>
+    </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+async function removeChannel(channelId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${channelsEndpoint}/${channelId}`, {
+      method: "DELETE",
+    });
+
+    fetchChannels(currentChannelsPage);
+  } catch {
+    //error message here
+  }
+}
+
+document
+  .getElementById("channelForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const channelData = {
+      name: document.getElementById("channelName").value,
+      group_id: document.getElementById("channelGroupId").value,
+      adult_gate: document.getElementById("channelAdultGate").value,
+    };
+
+    try {
+      const response = await fetch(channelsEndpoint, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(channelData),
+      });
+
+      //error check here or success message
+
+      document.getElementById("channelForm").reset();
+
+      fetchChannels(currentChannelsPage);
+    } catch {
+      //error message
+    }
+  });

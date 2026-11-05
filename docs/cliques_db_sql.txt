@@ -41,21 +41,10 @@ CREATE TABLE messages (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     body TEXT NOT NULL,
     sent_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    sender_id INT NOT NULL,
+    sender_id INT NULL,
     channel_id INT NULL,
     edited BOOLEAN NOT NULL DEFAULT FALSE
 );
-
-/*
-CREATE TABLE attachments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    message_id BIGINT NOT NULL,
-    format VARCHAR(20) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    url VARCHAR(2083) NOT NULL,
-    size_in_kilobytes BIGINT NOT NULL
-);
-*/
 
 
 ALTER TABLE users
@@ -65,7 +54,8 @@ ALTER TABLE users
 ALTER TABLE channels
 	ADD CONSTRAINT fk_channels_group
     FOREIGN KEY (group_id)
-    REFERENCES groups(id);
+    REFERENCES groups(id)
+    ON DELETE CASCADE;
     
 ALTER TABLE channels
 	ADD CONSTRAINT uq_channels_name
@@ -78,31 +68,29 @@ ALTER TABLE memberships
 ALTER TABLE memberships
 	ADD CONSTRAINT fk_memberships_user
     FOREIGN KEY (user_id)
-    REFERENCES users(id);
+    REFERENCES users(id)
+    ON DELETE CASCADE;
     
 ALTER TABLE memberships
 	ADD CONSTRAINT fk_memberships_group
     FOREIGN KEY (group_id)
-    REFERENCES groups(id);
+    REFERENCES groups(id)
+    ON DELETE CASCADE;
     
 ALTER TABLE memberships
 	ADD CONSTRAINT fk_memberships_channel
     FOREIGN KEY (channel_id)
-    REFERENCES channels(id);
+    REFERENCES channels(id)
+    ON DELETE CASCADE;
 
 ALTER TABLE messages
 	ADD CONSTRAINT fk_messages_sender
     FOREIGN KEY (sender_id)
-    REFERENCES users(id);
+    REFERENCES users(id)
+    ON DELETE SET NULL;
     
 ALTER TABLE messages
 	ADD CONSTRAINT fk_messages_channel
     FOREIGN KEY (channel_id)
-    REFERENCES channels(id);
-
-/*
-ALTER TABLE attachments
-	ADD CONSTRAINT fk_attachments_message
-    FOREIGN KEY (message_id)
-    REFERENCES messages(id);
-*/
+    REFERENCES channels(id)
+    ON DELETE CASCADE;

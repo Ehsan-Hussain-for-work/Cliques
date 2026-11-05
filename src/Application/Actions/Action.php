@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use Symfony\Component\Yaml\Yaml;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -58,6 +59,14 @@ abstract class Action
     }
 
     /**
+     * @return array
+     */
+    protected function getURLData()
+    {
+        return $this->request->getQueryParams();
+    }
+
+    /**
      * @return mixed
      * @throws HttpBadRequestException
      */
@@ -100,14 +109,46 @@ abstract class Action
             ->withHeader('Cache-Control', 'no-store')
             ->withStatus($payload->getStatusCode());
     }
-    //todo This needs to be adjusted before delivery
+
     private function encodeXml(array $data): string
     {
-        return "<xml>todo</xml>";
+        $xml = new \XMLWriter;
+        $xml->openMemory();
+        $xml->startDocument('1.0', 'UTF-8');
+        $xml->startElement('response');
+
+        $this->arrayToXml($data, $xml);
+
+        $xml->endElement();
+        $xml->endDocument();
+        return $xml->outputMemory();
     }
-    // todo this one too
+
     private function encodeYaml(array $data): string
     {
-        return "todo: yaml";
+        //5 = max inline dept & 3 = spaces per indent
+        // return Yaml::dump($data, 5, 3);
+        return 'todo: implement YAML encoding';
+    }
+
+    private function arrayToXml(array $data, \XMLWriter $xml): void
+    {
+        foreach ($data as $key => $value) {
+            $key = is_numeric($key) ? 'item' : $key;
+
+            $xml->startElement($key);
+
+            if (\is_array($value) || \is_object($value)) {
+                $this->arrayToXml($value, $xml);
+            } elseif (\is_bool($value)) {
+                $xml->text($value ? 'true' : 'false');
+            } elseif ($value === null) {
+                $xml->writeAttributeNS('xsi', 'nil', 'http://www.w3.org/2001/XMLSchema-instance', 'true');
+            } else {
+                $xml->text((string) $value);
+            }
+
+            $xml->endElement();
+        }
     }
 }
