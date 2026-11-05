@@ -39,4 +39,6 @@ interface UserRepository
      * @return array The paginated and enveloped response data
      */
     public function page(array $query): array;
+
+    public function updateUser(int $id, array $providedData): array;
 }

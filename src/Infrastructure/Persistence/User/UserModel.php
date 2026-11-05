@@ -135,4 +135,24 @@ class UserModel implements UserRepository
 
         return UserCollectionQuery::envelope($items, $query, $total);
     }
+
+    public function updateUser(int $id, array $providedData): array
+    {
+        $query = 'UPDATE users 
+                  SET username = :username, 
+                      user_email = :user_email, 
+                      user_birthday = :user_birthday 
+                  WHERE id = :id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'username' => $providedData['username'],
+            'user_email' => $providedData['user_email'],
+            'user_birthday' => $providedData['user_birthday'],
+            'id' => $id
+        ]);
+
+        return $this->findIdUser($id);
+    }
 }
