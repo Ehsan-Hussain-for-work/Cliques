@@ -1,8 +1,10 @@
 const apiBase = "/cliques-lia";
 const usersEndpoint = `${apiBase}/users`;
 const groupsEndpoint = `${apiBase}/groups`;
+const channelsEndpoint = `${apiBase}/channels`;
 let currentUsersPage,
-  currentGroupsPage = 1;
+  currentGroupsPage,
+  currentChannelsPage = 1;
 
 async function updateConsole(url) {
   const outputElement = document.getElementById("json-output");
@@ -71,17 +73,33 @@ function updatePagination(metadata, type, functionName) {
   pagination.appendChild(nextButton);
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  fetchUsers();
+  fetchGroups();
+  fetchChannels();
+});
+
 async function fetchUsers(page = 1) {
-  const response = await fetch(`${usersEndpoint}?page=${page}`);
-  const payload = await response.json();
+  try {
+    const response = await fetch(`${usersEndpoint}?page=${page}`);
+    const payload = await response.json();
 
-  const result = payload.data;
+    const usersArray = payload.items;
 
-  currentUsersPage = result.metadata.current_page;
+    const metadata = {
+      current_page: payload.page.number,
+      total_pages: payload.page.totalPages,
+    };
+    currentUsersPage = metadata.current_page;
 
-  displayUsers(result.data);
+    displayUsers(usersArray);
 
-  updatePagination(result.metadata, "user", fetchUsers);
+    updatePagination(metadata, "user", fetchUsers);
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+    document.getElementById("userTableBody").innerHTML =
+      "<tr><td colspan='6' class='text-center'>Failed to load users. Please try again later.</td></tr>";
+  }
 }
 
 function displayUsers(users) {
@@ -111,10 +129,18 @@ function displayUsers(users) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetchUsers();
-  fetchGroups();
-});
+async function removeUser(userId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${usersEndpoint}/${userId}`, {
+      method: "DELETE",
+    });
+
+    fetchUsers(currentUsersPage);
+  } catch {
+    //error message here
+  }
+}
 
 document
   .getElementById("userForm")
@@ -150,30 +176,26 @@ document
     }
   });
 
-async function removeUser(userId) {
-  //confirmation message?
-  try {
-    const response = await fetch(`${usersEndpoint}/${userId}`, {
-      method: "DELETE",
-    });
-
-    fetchUsers(currentUsersPage);
-  } catch {
-    //error message here
-  }
-}
-
 async function fetchGroups(page = 1) {
-  const response = await fetch(`${groupsEndpoint}?page=${page}`);
-  const payload = await response.json();
+  try {
+    const response = await fetch(`${groupsEndpoint}?page=${page}`);
+    const payload = await response.json();
 
-  const result = payload.data;
+    const groups = payload.data;
+    const metadata = payload.metadata;
 
-  currentGroupsPage = result.metadata.current_page;
+    // const result = payload.data;
 
-  displayGroups(result.data);
+    currentGroupsPage = metadata.current_page;
 
-  updatePagination(result.metadata, "group", fetchGroups);
+    displayGroups(groups);
+
+    updatePagination(metadata, "group", fetchGroups);
+  } catch (error) {
+    console.error("Failed to fetch groups:", error);
+    document.getElementById("groupTableBody").innerHTML =
+      "<tr><td colspan='5' class='text-center'>Failed to load groups. Please try again later.</td></tr>";
+  }
 }
 
 function displayGroups(groups) {
@@ -200,6 +222,19 @@ function displayGroups(groups) {
 
     tableBody.appendChild(row);
   });
+}
+
+async function removeGroup(groupId) {
+  //confirmation message?
+  try {
+    const response = await fetch(`${groupsEndpoint}/${groupId}`, {
+      method: "DELETE",
+    });
+
+    fetchGroups(currentGroupsPage);
+  } catch {
+    //error message here
+  }
 }
 
 document
@@ -234,15 +269,86 @@ document
     }
   });
 
-async function removeGroup(groupId) {
+async function fetchChannels(page = 1) {
+  const response = await fetch(`${channelsEndpoint}?page=${page}`);
+  const payload = await response.json();
+
+  const result = payload.data;
+
+  currentChannelsPage = result.metadata.current_page;
+
+  displayChannels(result.data);
+
+  updatePagination(result.metadata, "channel", fetchChannels);
+}
+
+function displayChannels(channels) {
+  const tableBody = document.getElementById("channelTableBody");
+
+  tableBody.innerHTML = "";
+
+  channels.forEach((channel) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+    <td class="text-center">${channel.id}</td>
+    <td class="text-center">${channel.name}</td>
+    <td class="text-center">${channel.group_id}</td>
+    <td class="text-center">${channel.adult_gate == 1 ? "Adult only" : "All ages"}</td>
+    <td class="text-center">
+      <button class="btn btn-info btn-sm" onclick="">
+      Edit
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="removeChannel(${channel.id})">
+      Delete
+      </button>
+    </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+async function removeChannel(channelId) {
   //confirmation message?
   try {
-    const response = await fetch(`${groupsEndpoint}/${groupId}`, {
+    const response = await fetch(`${channelsEndpoint}/${channelId}`, {
       method: "DELETE",
     });
 
-    fetchGroups(currentGroupsPage);
+    fetchChannels(currentChannelsPage);
   } catch {
     //error message here
   }
 }
+
+document
+  .getElementById("channelForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const channelData = {
+      name: document.getElementById("channelName").value,
+      group_id: document.getElementById("channelGroupId").value,
+      adult_gate: document.getElementById("channelAdultGate").value,
+    };
+
+    try {
+      const response = await fetch(channelsEndpoint, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(channelData),
+      });
+
+      //error check here or success message
+
+      document.getElementById("channelForm").reset();
+
+      fetchChannels(currentChannelsPage);
+    } catch {
+      //error message
+    }
+  });

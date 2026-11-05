@@ -115,7 +115,6 @@
 
                   <nav
                     class="d-flex flex-wrap justify-content-center gap-3 mt-3"
-                    aria-label="User page navigation"
                   >
                     <!-- <ul class="pagination">
                       <li class="page-item disabled">
@@ -317,7 +316,6 @@
 
                   <nav
                     class="d-flex flex-wrap justify-content-center gap-3 mt-3"
-                    aria-label="User page navigation"
                   >
                     <div id="groupPagination"></div>
                   </nav>
@@ -462,11 +460,11 @@
                     <table class="table table-hover align-middle mb-0">
                       <thead class="table-light">
                         <tr>
-                          <th scope="col">ID</th>
-                          <th scope="col">Group ID</th>
-                          <th scope="col">Memberships</th>
-                          <th scope="col">Adult Gate</th>
-                          <th scope="col" class="text-end">Actions</th>
+                          <th scope="col" class="text-center">ID</th>
+                          <th scope="col" class="text-center">Name</th>
+                          <th scope="col" class="text-center">Group ID</th>
+                          <th scope="col" class="text-center">Adult Gate</th>
+                          <th scope="col" class="text-center">Actions</th>
                         </tr>
                       </thead>
 
@@ -478,19 +476,8 @@
 
                   <nav
                     class="d-flex flex-wrap justify-content-center gap-3 mt-3"
-                    aria-label="Channel page navigation"
                   >
-                    <ul class="pagination" id="channelPagination">
-                      <li class="page-item disabled">
-                        <a class="page-link" href="#">Previous</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">1</a>
-                      </li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                      </li>
-                    </ul>
+                    <div id="channelPagination"></div>
                   </nav>
                 </div>
               </div>
@@ -512,7 +499,24 @@
                     </h3>
 
                     <form id="channelForm" novalidate>
-                      <input type="hidden" id="channelId" name="id" />
+                      <div class="mb-3">
+                        <label for="channelName" class="form-label">
+                          Channel Name
+                        </label>
+
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="channelName"
+                          name="name"
+                          required
+                        />
+
+                        <div
+                          id="channelNameError"
+                          class="invalid-feedback"
+                        ></div>
+                      </div>
 
                       <div class="mb-3">
                         <label for="channelGroupId" class="form-label">
@@ -530,25 +534,6 @@
 
                         <div
                           id="channelGroupIdError"
-                          class="invalid-feedback"
-                        ></div>
-                      </div>
-
-                      <div class="mb-4">
-                        <label for="channelMemberships" class="form-label">
-                          Membership IDs
-                        </label>
-
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="channelMemberships"
-                          name="memberships"
-                          placeholder="1 2 3"
-                        />
-
-                        <div
-                          id="channelMembershipsError"
                           class="invalid-feedback"
                         ></div>
                       </div>
@@ -591,7 +576,7 @@
             </div>
           </section>
 
-          <section
+          <!-- <section
             id="memberships"
             class="content-section mb-5 card border-0 shadow-sm"
           >
@@ -839,7 +824,7 @@
                 </div>
               </section>
             </div>
-          </section>
+          </section> -->
 
           <section
             id="messages"

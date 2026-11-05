@@ -10,11 +10,17 @@ use App\Application\Actions\Group\RemoveGroupAction;
 use App\Application\Actions\Group\AddGroupAction;
 use App\Application\Actions\Group\ListGroupsAction;
 use App\Application\Actions\Group\ViewGroupAction;
+use App\Application\Actions\Channel\RemoveChannelAction;
+use App\Application\Actions\Channel\AddChannelAction;
+use App\Application\Actions\Channel\ListChannelsAction;
+use App\Application\Actions\Channel\ViewChannelAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use App\Application\Middleware\CollectionQueryMiddleware as CollectionQ;
+use App\Application\Support\UserCollectionQuery;
+use App\Application\Support\GroupCollectionQuery;
 
 return function (App $app) {
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -33,16 +39,24 @@ return function (App $app) {
 
     $app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class)
-            ->add(CollectionQ::class);
+            ->add(new CollectionQ(UserCollectionQuery::class));
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
         $group->delete('/{id}', RemoveUserAction::class);
     });
 
     $app->group('/groups', function (Group $group) {
-        $group->get('', ListGroupsAction::class);
+        $group->get('', ListGroupsAction::class)
+            ->add(new CollectionQ(GroupCollectionQuery::class));
         $group->get('/{id}', ViewGroupAction::class);
         $group->post('', AddGroupAction::class);
         $group->delete('/{id}', RemoveGroupAction::class);
+    });
+
+    $app->group('/channels', function (Group $group) {
+        $group->get('', ListChannelsAction::class);
+        $group->get('/{id}', ViewChannelAction::class);
+        $group->post('', AddChannelAction::class);
+        $group->delete('/{id}', RemoveChannelAction::class);
     });
 };
