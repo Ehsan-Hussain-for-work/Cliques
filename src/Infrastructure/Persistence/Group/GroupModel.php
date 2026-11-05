@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Channel;
+namespace App\Infrastructure\Persistence\Group;
 
-use App\Domain\Channel\ChannelNotFoundException;
-use App\Domain\Channel\ChannelRepository;
+use App\Domain\Group\GroupNotFoundException;
+use App\Domain\Group\GroupRepository;
 use Override;
 use PDO;
 
-class ChannelRepo implements ChannelRepository
+class GroupModel implements GroupRepository
 {
     private PDO $db;
 
@@ -20,19 +20,19 @@ class ChannelRepo implements ChannelRepository
 
     public function countAll(): int
     {
-        $query = 'SELECT COUNT(*) FROM channels';
+        $query = 'SELECT COUNT(*) FROM groups';
 
         $sql = $this->db->query($query);
 
-        $channelNum = (int) $sql->fetchColumn();
+        $groupNum = (int) $sql->fetchColumn();
 
-        return $channelNum;
+        return $groupNum;
     }
 
     public function findAll(int $limit, int $offset): array
     {
         $query = 'SELECT * 
-        FROM channels 
+        FROM groups 
         ORDER BY id ASC 
         LIMIT :limit OFFSET :offset';
 
@@ -42,49 +42,49 @@ class ChannelRepo implements ChannelRepository
         $sql->bindValue(':offset', $offset, PDO::PARAM_INT);
 
         $sql->execute();
-        $channels = $sql->fetchAll(PDO::FETCH_ASSOC);
+        $groups = $sql->fetchAll(PDO::FETCH_ASSOC);
 
-        return $channels;
+        return $groups;
     }
 
-    public function findIdChannel(int $id): array
+    public function findIdGroup(int $id): array
     {
-        $query = 'SELECT id, `name`, group_id, adult_gate 
-        FROM channels 
+        $query = 'SELECT id, `name`, creation_date, adult_gate 
+        FROM groups 
         WHERE id = :id';
 
         $sql = $this->db->prepare($query);
         $sql->execute(['id' => $id]);
-        $channel = $sql->fetch();
+        $group = $sql->fetch();
 
-        if (!$channel) {
-            throw new ChannelNotFoundException();
+        if (!$group) {
+            throw new GroupNotFoundException();
         } else {
-            return $channel;
+            return $group;
         }
     }
 
-    public function addChannel(array $providedData): array
+    public function addGroup(array $providedData): array
     {
-        $query = 'INSERT INTO channels 
-        (`name`, group_id, adult_gate) 
+        $query = 'INSERT INTO groups 
+        (`name`, creation_date, adult_gate) 
         VALUES 
-        (:name, :group_id, :adult_gate)';
+        (:name, :creation_date, :adult_gate)';
 
         $sql = $this->db->prepare($query);
         $sql->execute([
             'name' => $providedData['name'],
-            'group_id' => $providedData['group_id'],
+            'creation_date' => $providedData['creation_date'],
             'adult_gate' => $providedData['adult_gate']
         ]);
 
         $createdId = (int) $this->db->lastInsertId();
-        return $this->findIdChannel($createdId);
+        return $this->findIdGroup($createdId);
     }
 
-    public function removeChannel(int $id): bool
+    public function removeGroup(int $id): bool
     {
-        $query = 'DELETE FROM channels WHERE id = :id';
+        $query = 'DELETE FROM groups WHERE id = :id';
 
         $sql = $this->db->prepare($query);
 
