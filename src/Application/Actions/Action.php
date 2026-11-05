@@ -127,7 +127,8 @@ abstract class Action
     private function encodeYaml(array $data): string
     {
         //5 = max inline dept & 3 = spaces per indent
-        return Yaml::dump($data, 5, 3);
+        // return Yaml::dump($data, 5, 3);
+        return 'todo: implement YAML encoding';
     }
 
     private function arrayToXml(array $data, \XMLWriter $xml): void
@@ -137,12 +138,12 @@ abstract class Action
 
             $xml->startElement($key);
 
-            if (is_array($value) || is_object($value)) {
+            if (\is_array($value) || \is_object($value)) {
                 $this->arrayToXml($value, $xml);
-            } elseif (is_bool($value)) {
+            } elseif (\is_bool($value)) {
                 $xml->text($value ? 'true' : 'false');
             } elseif ($value === null) {
-                $xml->writeAttribute('nil', 'true');
+                $xml->writeAttributeNS('xsi', 'nil', 'http://www.w3.org/2001/XMLSchema-instance', 'true');
             } else {
                 $xml->text((string) $value);
             }
