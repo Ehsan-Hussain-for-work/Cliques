@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Support;
 
 use InvalidArgumentException;
+use Override;
 
 abstract class CollectionQuery
 {
