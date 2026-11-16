@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Support;
 
-use Override;
-
 final class GroupCollectionQuery extends CollectionQuery
 {
     protected const FIELDS = [

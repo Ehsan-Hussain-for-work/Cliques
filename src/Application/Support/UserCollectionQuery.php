@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Support;
 
 // use InvalidArgumentException;
-use Override;
 
 /** Modified from week 5 CollectionQuery */
 final class UserCollectionQuery extends CollectionQuery
