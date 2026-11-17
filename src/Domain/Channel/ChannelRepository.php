@@ -34,4 +34,9 @@ interface ChannelRepository
      * @return bool
      */
     public function removeChannel(int $id): bool;
+
+    /**
+     * @return array
+     */
+    public function page(array $query): array;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Support;
 
+use Override;
 // use InvalidArgumentException;
 
 /** Modified from week 5 CollectionQuery */

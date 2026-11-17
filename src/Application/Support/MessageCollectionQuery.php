@@ -6,7 +6,7 @@ namespace App\Application\Support;
 
 use Override;
 
-final class GroupCollectionQuery extends CollectionQuery
+final class MessageCollectionQuery extends CollectionQuery
 {
     protected const FIELDS = [
         'id' => 'id',
@@ -37,27 +37,34 @@ final class GroupCollectionQuery extends CollectionQuery
 
     protected static function getAllowedFilters(): array
     {
-        return ['name', 'adult_gate']; //TODO this line and going down
+        return ['sent_time', 'sender_id', 'channel_id'];
     }
 
     protected static function applyFilters(array $input, array &$q): void
     {
-        if (isset($input['name'])) {
-            $q['name'] = $input['name'];
+        if (isset($input['sent_time'])) {
+            $q['sent_time'] = $input['sent_time'];
         }
-        if (isset($input['adult_gate'])) {
-            $q['adult_gate'] = $input['adult_gate'];
+        if (isset($input['sender_id'])) {
+            $q['sender_id'] = $input['sender_id'];
+        }
+        if (isset($input['channel_id'])) {
+            $q['channel_id'] = $input['channel_id'];
         }
     }
     protected static function buildFilters(array $q, array &$where, array &$params): void
     {
-        if (isset($q['name'])) {
-            $where[] = 'name = :name';
-            $params['name'] = $q['name'];
+        if (isset($q['sent_time'])) {
+            $where[] = 'sent_time = :sent_time';
+            $params['sent_time'] = $q['sent_time'];
         }
-        if (isset($q['adult_gate'])) {
-            $where[] = 'adult_gate = :adult_gate';
-            $params['adult_gate'] = $q['adult_gate'];
+        if (isset($q['sender_id'])) {
+            $where[] = 'sender_id = :sender_id';
+            $params['sender_id'] = $q['sender_id'];
+        }
+        if (isset($q['channel_id'])) {
+            $where[] = 'channel_id = :channel_id';
+            $params['channel_id'] = $q['channel_id'];
         }
     }
 }

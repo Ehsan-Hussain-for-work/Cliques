@@ -14,6 +14,10 @@ use App\Application\Actions\Channel\RemoveChannelAction;
 use App\Application\Actions\Channel\AddChannelAction;
 use App\Application\Actions\Channel\ListChannelsAction;
 use App\Application\Actions\Channel\ViewChannelAction;
+use App\Application\Actions\Message\RemoveMessageAction;
+use App\Application\Actions\Message\AddMessageAction;
+use App\Application\Actions\Message\ListMessagesAction;
+use App\Application\Actions\Message\ViewMessageAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -21,6 +25,8 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use App\Application\Middleware\CollectionQueryMiddleware as CollectionQ;
 use App\Application\Support\UserCollectionQuery;
 use App\Application\Support\GroupCollectionQuery;
+use App\Application\Support\ChannelCollectionQuery;
+use App\Application\Support\MessageCollectionQuery;
 use App\Application\Actions\User\UpdateUserAction;
 
 return function (App $app) {
@@ -56,9 +62,18 @@ return function (App $app) {
     });
 
     $app->group('/channels', function (Group $group) {
-        $group->get('', ListChannelsAction::class);
+        $group->get('', ListChannelsAction::class)
+            ->add(new CollectionQ(ChannelCollectionQuery::class));
         $group->get('/{id}', ViewChannelAction::class);
         $group->post('', AddChannelAction::class);
         $group->delete('/{id}', RemoveChannelAction::class);
+    });
+
+    $app->group('/messages', function (Group $group) {
+        $group->get('', ListMessagesAction::class)
+            ->add(new CollectionQ(MessageCollectionQuery::class));
+        $group->get('/{id}', ViewMessageAction::class);
+        $group->post('', AddMessageAction::class);
+        $group->delete('/{id}', RemoveMessageAction::class);
     });
 };

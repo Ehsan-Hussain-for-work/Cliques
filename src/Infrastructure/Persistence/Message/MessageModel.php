@@ -6,7 +6,6 @@ namespace App\Infrastructure\Persistence\Message;
 
 use App\Domain\Message\MessageNotFoundException;
 use App\Domain\Message\MessageRepository;
-use Override;
 use PDO;
 use App\Application\Support\MessageCollectionQuery;
 

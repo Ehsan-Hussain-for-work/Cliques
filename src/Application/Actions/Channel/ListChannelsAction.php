@@ -13,37 +13,10 @@ class ListChannelsAction extends ChannelAction
      */
     protected function action(): Response
     {
-        $data = $this->getURLData();
+        $query = $this->request->getAttribute('collectionQuery');
 
-        $page = isset($data['page']) ? (int)$data['page'] : 1;
+        $responseData = $this->channelRepository->page($query);
 
-        $limit = 5;
-
-        if ($page < 1) {
-            $page = 1;
-        }
-
-        $offset = ($page - 1) * $limit;
-
-        $allChannels = $this->channelRepository->countAll();
-
-        $allPages = (int) ceil($allChannels / $limit);
-
-        if ($allPages > 0 && $page > $allPages) {
-            $page = $allPages;
-            $offset = ($page - 1) * $limit;
-        }
-
-        $channels = $this->channelRepository->findAll($limit, $offset);
-
-        return $this->respondWithData([
-            'metadata' => [
-                'total_items' => $allChannels,
-                'total_pages' => $allPages,
-                'current_page' => $page,
-                'per_page' => $limit
-            ],
-            'data' => $channels
-        ]);
+        return $this->respondWithData($responseData);
     }
 }
