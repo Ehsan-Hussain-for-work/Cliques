@@ -5,9 +5,11 @@ declare(strict_types=1);
 use App\Domain\User\UserRepository;
 use App\Domain\Group\GroupRepository;
 use App\Domain\Channel\ChannelRepository;
+use App\Domain\Message\MessageRepository;
 use App\Infrastructure\Persistence\User\UserModel;
 use App\Infrastructure\Persistence\Group\GroupModel;
 use App\Infrastructure\Persistence\Channel\ChannelModel;
+use App\Infrastructure\Persistence\Message\MessageModel;
 use DI\ContainerBuilder;
 
 return function (ContainerBuilder $containerBuilder) {
@@ -16,5 +18,6 @@ return function (ContainerBuilder $containerBuilder) {
         UserRepository::class => \DI\autowire(UserModel::class),
         GroupRepository::class => \DI\autowire(GroupModel::class),
         ChannelRepository::class => \DI\autowire(ChannelModel::class),
+        MessageRepository::class => \DI\autowire(MessageModel::class)
     ]);
 };
