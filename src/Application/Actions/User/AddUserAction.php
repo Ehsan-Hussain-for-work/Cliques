@@ -7,6 +7,7 @@ namespace App\Application\Actions\User;
 use App\Application\Actions\User\UserAction;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException as BadReq;
 
 class AddUserAction extends UserAction
 {
@@ -14,7 +15,9 @@ class AddUserAction extends UserAction
     {
         $addRequest = $this->getFormData();
 
-        //error handle here
+        if (empty($addRequest) || !is_array($addRequest)) {
+            throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
+        }
 
         $addRequest['password_hash'] = password_hash($addRequest['password'], PASSWORD_DEFAULT);
 

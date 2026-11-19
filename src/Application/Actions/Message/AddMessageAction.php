@@ -7,6 +7,7 @@ namespace App\Application\Actions\Message;
 use App\Application\Actions\Message\MessageAction;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException as BadReq;
 
 class AddMessageAction extends MessageAction
 {
@@ -14,7 +15,9 @@ class AddMessageAction extends MessageAction
     {
         $addRequest = $this->getFormData();
 
-        //error handle here
+        if (empty($addRequest) || !\is_array($addRequest)) {
+            throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
+        }
 
         $addRequest['adult_gate'] = filter_var($addRequest['adult_gate'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
 

@@ -23,19 +23,17 @@ class ContentNegotiationMiddleware implements Middleware
         // Note: For this project's scope, supported formats are hardcoded inline.
         // move to a config class or enum if the business logic is liable to change
         $accept = $request->hasHeader('Accept') ? $request->getHeaderLine('Accept') : null;
-        // die('Middleware ran! Accept header was: ' . $accept);
         $supported = ['application/json', 'application/xml', 'application/yaml'];
 
         $media = $this->selector->select($accept, $supported);
 
         if ($media === null) {
-            // This triggers your 406 Error Handler
+            // This triggers 406 Error Handler
             throw new HttpNotAcceptableException($request, 'No acceptable success format.');
         }
-
         // Pass the chosen format downstream to the Action
         $request = $request->withAttribute('responseFormat', $media);
 
-        return $handler->handle($request);
+        return $handler->handle($request)->withHeader('Vary', 'Accept');
     }
 }
