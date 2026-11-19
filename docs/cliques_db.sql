@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 14, 2026 at 08:19 PM
+-- Generation Time: Nov 18, 2026 at 08:40 PM
 -- Server version: 11.8.5-MariaDB-log
 -- PHP Version: 8.5.1
 
@@ -72,7 +72,7 @@ CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
   `body` text NOT NULL,
   `sent_time` datetime NOT NULL DEFAULT current_timestamp(),
-  `sender_id` int(11) NOT NULL,
+  `sender_id` int(11) DEFAULT NULL,
   `channel_id` int(11) DEFAULT NULL,
   `edited` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -92,6 +92,21 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `warning_status` tinyint(1) NOT NULL DEFAULT 0
 ) ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_tokens`
+--
+
+CREATE TABLE `user_tokens` (
+  `id` bigint(20) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `expires_at` datetime NOT NULL,
+  `revoked_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
@@ -136,6 +151,14 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `user_email` (`user_email`);
 
 --
+-- Indexes for table `user_tokens`
+--
+ALTER TABLE `user_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `token_hash` (`token_hash`),
+  ADD KEY `fk_tokens_user` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -164,6 +187,12 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `user_tokens`
+--
+ALTER TABLE `user_tokens`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -171,22 +200,28 @@ ALTER TABLE `users`
 -- Constraints for table `channels`
 --
 ALTER TABLE `channels`
-  ADD CONSTRAINT `fk_channels_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
+  ADD CONSTRAINT `fk_channels_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `memberships`
 --
 ALTER TABLE `memberships`
-  ADD CONSTRAINT `fk_memberships_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
-  ADD CONSTRAINT `fk_memberships_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`),
-  ADD CONSTRAINT `fk_memberships_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_memberships_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_memberships_group` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_memberships_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `fk_messages_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`),
-  ADD CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_messages_channel` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `user_tokens`
+--
+ALTER TABLE `user_tokens`
+  ADD CONSTRAINT `fk_tokens_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

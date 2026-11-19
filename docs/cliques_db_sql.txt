@@ -1,4 +1,4 @@
-CREATE DATABASE cliques_db
+CREATE DATABASE IF NOT EXISTS cliques_db
 	CHARACTER SET utf8mb4
 	COLLATE utf8mb4_unicode_ci;
 
@@ -44,6 +44,15 @@ CREATE TABLE messages (
     sender_id INT NULL,
     channel_id INT NULL,
     edited BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE user_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expiration_date DATETIME NOT NULL,
+    revoked_date DATETIME NULL
 );
 
 
@@ -94,3 +103,9 @@ ALTER TABLE messages
     FOREIGN KEY (channel_id)
     REFERENCES channels(id)
     ON DELETE CASCADE;
+
+ALTER TABLE user_tokens
+	ADD CONSTRAINT fk_tokens_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE

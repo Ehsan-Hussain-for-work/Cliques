@@ -16,6 +16,20 @@ class SessionMiddleware implements Middleware
      */
     public function process(Request $request, RequestHandler $handler): Response
     {
+        //TODO: Retrieve the Authorization header. (Authorization: Bearer YOUR_TOKEN)
+
+        //TODO: Extract the token.
+
+        //TODO: Hash the token. ($tokenHash = hash('sha256', $token);)
+
+        //TODO: Check the database.
+
+        //TODO: Retrieve the associated user.
+
+        /* //TODO: Attach the user to the request. ($request = $request->withAttribute('authenticatedUser',$user);) */
+
+        //TODO: Continue processing the request. (return $handler->handle($request); or "401 Unauthorized")
+
         if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             session_start();
             $request = $request->withAttribute('session', $_SESSION);
