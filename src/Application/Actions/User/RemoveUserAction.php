@@ -3,20 +3,34 @@
 namespace App\Application\Actions\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpForbiddenException;
 
 class RemoveUserAction extends UserAction
 {
 
     protected function action(): Response
     {
-        $userId = (int) $this->args['id'];
+        // 1. Get authenticated user's information
+        $authUser = $this->request->getAttribute('authUser');
 
-        $deletion = $this->userRepository->removeUser($userId);
+        $authUserId = (int) $authUser['id'];
+
+        // 2. Get requested profile ID
+        $requestUserId = (int) $this->resolveArg('id');
+
+        // 3. Authorization check
+        if ($authUserId !== $requestUserId) {
+            throw new HttpForbiddenException(
+                $this->request,
+                'Only the owner of the profile can delete it.'
+            );
+        }
+
+        $deletion = $this->userRepository->removeUser($authUserId);
 
         if ($deletion) {
-            return $this->respondWithData(['message' => "User $userId deleted."]);
+            return $this->respondWithData(['message' => "User $requestUserId deleted."]);
         } else {
-            //error message goes here. Temp value here for now.  
             return $this->respondWithData(['message' => "No User deleted."]);
         }
     }

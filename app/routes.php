@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Application\Middleware\AuthMiddleware;
+use App\Application\Actions\Auth\LoginAction;
+use App\Application\Actions\Auth\LogoutAction;
+use App\Application\Actions\Auth\ViewAuthUserAction;
 use App\Application\Actions\User\RemoveUserAction;
 use App\Application\Actions\User\AddUserAction;
 use App\Application\Actions\User\ListUsersAction;
@@ -44,13 +48,19 @@ return function (App $app) {
         }
     });
 
+    $app->post('/auth/login', LoginAction::class);
+    $app->group('/auth', function (Group $group) {
+        $group->post('/logout', LogoutAction::class);
+        $group->get('/me', ViewAuthUserAction::class);
+    })->add(AuthMiddleware::class);
+
     $app->group('/users', function (Group $group) {
         $group->get('', ListUsersAction::class)
             ->add(new CollectionQ(UserCollectionQuery::class));
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
-        $group->put('/{id}', UpdateUserAction::class);
-        $group->delete('/{id}', RemoveUserAction::class);
+        $group->put('/{id}', UpdateUserAction::class)->add(AuthMiddleware::class);
+        $group->delete('/{id}', RemoveUserAction::class)->add(AuthMiddleware::class);
     });
 
     $app->group('/groups', function (Group $group) {

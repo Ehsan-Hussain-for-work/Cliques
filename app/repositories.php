@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Domain\Auth\AuthRepository;
 use App\Domain\User\UserRepository;
 use App\Domain\Group\GroupRepository;
 use App\Domain\Channel\ChannelRepository;
 use App\Domain\Message\MessageRepository;
+use App\Infrastructure\Persistence\Auth\AuthModel;
 use App\Infrastructure\Persistence\User\UserModel;
 use App\Infrastructure\Persistence\Group\GroupModel;
 use App\Infrastructure\Persistence\Channel\ChannelModel;
@@ -15,6 +17,7 @@ use DI\ContainerBuilder;
 return function (ContainerBuilder $containerBuilder) {
     // Here we map our UserRepository interface to its implementation
     $containerBuilder->addDefinitions([
+        AuthRepository::class => \DI\autowire(AuthModel::class),
         UserRepository::class => \DI\autowire(UserModel::class),
         GroupRepository::class => \DI\autowire(GroupModel::class),
         ChannelRepository::class => \DI\autowire(ChannelModel::class),
