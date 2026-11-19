@@ -28,7 +28,7 @@ class AuthMiddleware implements Middleware
         $authorization = $request->getHeaderLine('Authorization');
 
         //Checks for token.
-        if (!preg_match('/^Bearers+(S+)$/i', $authorization, $matches)) {
+        if (!preg_match('/^Bearer\s+(\S+)$/i', $authorization, $matches)) {
             throw new HttpUnauthorizedException(
                 $request,
                 'Missing or invalid authentication token.'

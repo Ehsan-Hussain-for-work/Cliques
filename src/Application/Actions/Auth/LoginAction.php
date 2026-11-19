@@ -9,6 +9,7 @@ use App\Domain\Auth\AuthRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use \Slim\Exception\HttpUnauthorizedException;
 
 class LoginAction extends Action
 {
@@ -45,7 +46,7 @@ class LoginAction extends Action
             $user === null ||
             !password_verify($password, $user['password_hash'])
         ) {
-            throw new HttpBadRequestException(
+            throw new HttpUnauthorizedException(
                 $this->request,
                 'Invalid email or password.'
             );

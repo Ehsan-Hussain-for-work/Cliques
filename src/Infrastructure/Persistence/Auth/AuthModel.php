@@ -39,9 +39,9 @@ class AuthModel implements AuthRepository
     ): void {
 
         $query = 'INSERT INTO user_tokens
-        (user_id, token_hash, expiration_date)
+        (user_id, token_hash, creation_date, expiration_date)
         VALUES
-        (:user_id, :token_hash, :expiration_date)';
+        (:user_id, :token_hash, UTC_TIMESTAMP(), :expiration_date)';
 
         $sql = $this->db->prepare($query);
         $sql->execute([
@@ -73,7 +73,7 @@ class AuthModel implements AuthRepository
     public function revokeToken(string $tokenHash): bool
     {
         $query = 'UPDATE user_tokens
-        SET removed_Date = UTC_TIMESTAMP()
+        SET revoked_Date = UTC_TIMESTAMP()
         WHERE token_hash = :token_hash
         AND revoked_Date IS NULL';
 
