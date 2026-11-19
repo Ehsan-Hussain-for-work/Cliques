@@ -59,8 +59,8 @@ return function (App $app) {
             ->add(new CollectionQ(UserCollectionQuery::class));
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', AddUserAction::class);
-        $group->put('/{id}', UpdateUserAction::class);
-        $group->delete('/{id}', RemoveUserAction::class);
+        $group->put('/{id}', UpdateUserAction::class)->add(AuthMiddleware::class);
+        $group->delete('/{id}', RemoveUserAction::class)->add(AuthMiddleware::class);
     });
 
     $app->group('/groups', function (Group $group) {
