@@ -2,21 +2,12 @@
 
 namespace App\Application\Actions\User;
 
-use App\Application\Actions\Action;
-use App\Domain\User\UserRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 
-class UpdateUserAction extends Action
+class UpdateUserAction extends UserAction
 {
-    private UserRepository $userRepository;
-
-    public function __construct(UserRepository $userRepository,)
-    {
-        $this->userRepository = $userRepository;
-    }
-
     protected function action(): Response
     {
         // 1. Get auth user info

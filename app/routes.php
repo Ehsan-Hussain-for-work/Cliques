@@ -85,5 +85,5 @@ return function (App $app) {
         $group->get('/{id}', ViewMessageAction::class);
         $group->post('', AddMessageAction::class);
         $group->delete('/{id}', RemoveMessageAction::class);
-    });
+    })->add(AuthMiddleware::class);
 };

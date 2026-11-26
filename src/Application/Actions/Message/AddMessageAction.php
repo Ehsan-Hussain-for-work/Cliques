@@ -14,9 +14,14 @@ class AddMessageAction extends MessageAction
     {
         $addRequest = $this->getFormData();
 
-        //error handle here
-
-        $addRequest['adult_gate'] = filter_var($addRequest['adult_gate'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        // 1. Get authenticated user's information
+        $authUser = $this->request->getAttribute('authUser');
+        $addRequest['sent_time'] = gmdate(
+            'Y-m-d H:i:s',
+            time()
+        );
+        $addRequest['sender_id'] = (int) $authUser['id'];
+        $addRequest['edited'] = 0;
 
         $message = $this->messageRepository->addMessage($addRequest);
 
