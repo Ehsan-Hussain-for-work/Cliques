@@ -7,6 +7,7 @@ namespace App\Application\Actions\Channel;
 use App\Application\Actions\Channel\ChannelAction;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException as BadReq;
 
 class AddChannelAction extends ChannelAction
 {
@@ -15,6 +16,9 @@ class AddChannelAction extends ChannelAction
         $authUser = $this->request->getAttribute('authUser');
 
         $creatorId = (int) $authUser['id'];
+        if (empty($addRequest) || !\is_array($addRequest)) {
+            throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
+        }
 
         $addRequest = (array) $this->getFormData();
 

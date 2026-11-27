@@ -29,6 +29,7 @@
         "slim/psr7": "^1.8",
         "slim/slim": "4.*",
         "symfony/yaml": "^8.1",
+        "vlucas/phpdotenv": "^5.8",
         "willdurand/negotiation": "^3.1"
     },
     "require-dev": {

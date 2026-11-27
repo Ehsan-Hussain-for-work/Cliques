@@ -249,13 +249,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
+                type: $ref
                 items:
                   $ref: "#/components/schemas/Group"
         "400":
           $ref: "#/components/responses/BadRequest"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -304,6 +306,8 @@ paths:
           $ref: "#/components/responses/ResourceNotFound"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -374,6 +378,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -396,6 +402,12 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "429":
+          description: The external profanity provider quota was exceeded.
+        "502":
+          description: The external profanity provider returned an invalid response.
+        "503":
+          description: The external profanity provider was unavailable or not configured.
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -422,6 +434,8 @@ paths:
           $ref: "#/components/responses/ResourceNotFound"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -488,6 +502,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Channel"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
 
     post:
       summary: Create a new channel
@@ -683,19 +699,6 @@ components:
           format: date-time
           examples: ["2026-09-22T20:23:06Z"]
 
-    UserCollection:
-      type: object
-      xml:
-        name: users
-      properties:
-        users:
-          type: array
-          xml:
-            wrapped: true
-            name: user
-          items:
-            $ref: "#/components/schemas/User"
-
     Group:
       type: object
       xml:
@@ -775,51 +778,135 @@ components:
         edited:
           type: boolean
           examples: [false]
+        originalBody:
+          type: string
+          description: The original submitted text; nullable for legacy records.
+          examples: ["damn it!"]
+        censoredBody:
+          type: string
+          description: The provider-censored text, or the original text when bypassed.
+          examples: ["**** it!"]
+        moderationStatus:
+          type: string
+          enum: [clean, filtered, bypassed]
+          examples: [filtered]
+
+    Page:
+      type: object
+      properties:
+        number:
+          type: integer
+          examples: [1]
+        perPage:
+          type: integer
+          examples: [10]
+        returned:
+          type: integer
+          examples: [10]
+        totalItems:
+          type: integer
+          examples: [17]
+        totalPages:
+          type: integer
+          examples: [2]
+
+    Links:
+      type: object
+      properties:
+        self:
+          type: string
+          examples: ["/users?sort=id&page=1&limit=10"]
+        next:
+          type: ["string", "null"]
+          examples: ["/users?sort=id&page=2&limit=10"]
+        prev:
+          type: ["string", "null"]
+          examples: [null]
+
+    UserCollection:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        page:
+          $ref: "#/components/schemas/Page"
+        links:
+          $ref: "#/components/schemas/Links"
+
+    GroupCollection:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        page:
+          $ref: "#/components/schemas/Page"
+        links:
+          $ref: "#/components/schemas/Links"
+
+    ChannelCollection:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Channel"
+        page:
+          $ref: "#/components/schemas/Page"
+        links:
+          $ref: "#/components/schemas/Links"
+
+    MessageCollection:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        page:
+          $ref: "#/components/schemas/Page"
+        links:
+          $ref: "#/components/schemas/Links"
 
     ErrorResponse:
       type: object
       required:
-        - statusCode
-        - error
+        - type
+        - title
+        - status
+        - detail
       properties:
-        statusCode:
+        type:
+          type: string
+          examples: ["about:blank"]
+        title:
+          type: string
+          examples: ["Not Acceptable"]
+        status:
+          description: A code associated with the nature of the error.
           type: integer
-          description: HTTP status code associated with the error.
-          examples: [404]
-        error:
-          type: object
-          required:
-            - type
-            - description
-          properties:
-            type:
-              type: string
-              description: Classification of the error.
-              enum:
-                - BAD_REQUEST
-                - INSUFFICIENT_PRIVILEGES
-                - NOT_ACCEPTABLE
-                - NOT_ALLOWED
-                - NOT_IMPLEMENTED
-                - RESOURCE_NOT_FOUND
-                - SERVER_ERROR
-                - UNAUTHENTICATED
-                - VALIDATION_ERROR
-                - VERIFICATION_ERROR
-              examples: ["RESOURCE_NOT_FOUND"]
-            description:
-              type:
-                - string
-                - "null"
-              description: Explanation of what caused the error.
-              examples:
-                - "The user you requested does not exist."
+          examples: [406]
+        detail:
+          description: A message explaining the encountered error.
+          type: string
+          examples: ["No acceptable success format."]
+        instance:
+          description: The endpoint being requested when the error was encountered.
+          type: string
+          examples: ["/cliques-lia/channels"]
+        requestId:
+          description: The id associated with the request.
+          type: string
+          examples: ["15734abdaecd2c2c8b28c52bdca9646c"]
 
   responses:
     BadRequest:
       description: The request contains invalid parameters or malformed data.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
@@ -831,7 +918,7 @@ components:
     ResourceNotFound:
       description: The requested resource does not exist.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
@@ -843,7 +930,7 @@ components:
     MethodNotAllowed:
       description: The HTTP method is not supported by this endpoint.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
@@ -855,7 +942,7 @@ components:
     NotAcceptable:
       description: The requested response representation is not supported.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
@@ -870,7 +957,7 @@ components:
     ServerError:
       description: An unexpected server-side error occurred.
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
@@ -882,35 +969,35 @@ components:
     # Unauthorized:
     #   description: Authentication is required or invalid.
     #   content:
-    #     application/json:
+    #     application/problem+json:
     #       schema:
     #         $ref: "#/components/schemas/ErrorResponse"
 
     # Forbidden:
     #   description: The client has sufficient privileges.
     #   content:
-    #     application/json:
+    #     application/problem+json:
     #       schema:
     #         $ref: "#/components/schemas/ErrorResponse"
 
     # Conflict:
     #   description: The operation conflicts with registered data.
     #   content:
-    #     application/json:
+    #     application/problem+json:
     #       schema:
     #         $ref: "#/components/schemas/ErrorResponse"
 
     # ValidationError:
     #   description: The data failed to validate.
     #   content:
-    #     application/json:
+    #     application/problem+json:
     #       schema:
     #         $ref: "#/components/schemas/ErrorResponse"
 
     # NotImplemented:
     #   description: The functionality is not implemented.
     #   content:
-    #     application/json:
+    #     application/problem+json:
     #       schema:
     #         $ref: "#/components/schemas/ErrorResponse"
 
