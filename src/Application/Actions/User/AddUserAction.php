@@ -13,15 +13,21 @@ class AddUserAction extends UserAction
 {
     protected function action(): Response
     {
-        $addRequest = $this->getFormData();
+        $addRequest = (array) $this->getFormData();
 
         if (empty($addRequest) || !is_array($addRequest)) {
             throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
         }
+        $addRequest['password_hash'] = password_hash(
+            $addRequest['password'],
+            PASSWORD_DEFAULT
+        );
 
-        $addRequest['password_hash'] = password_hash($addRequest['password'], PASSWORD_DEFAULT);
+        $addRequest['warning_status'] = 0;
 
-        $addRequest['warning_status'] = filter_var($addRequest['warning_status'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        $addRequest['user_birthday'] = $addRequest['user_birthday'] ?? null;
+
+        unset($addRequest['password']);
 
         $user = $this->userRepository->addUser($addRequest);
 
