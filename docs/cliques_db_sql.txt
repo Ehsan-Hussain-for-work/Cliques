@@ -43,7 +43,10 @@ CREATE TABLE messages (
     sent_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     sender_id INT NULL,
     channel_id INT NULL,
-    edited BOOLEAN NOT NULL DEFAULT FALSE
+    edited BOOLEAN NOT NULL DEFAULT FALSE,
+    original_body TEXT NULL,
+    censored_body TEXT NULL,
+    moderation_status VARCHAR(20) NOT NULL DEFAULT 'bypassed'
 );
 
 

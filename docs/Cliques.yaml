@@ -402,6 +402,12 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
+        "429":
+          description: The external profanity provider quota was exceeded.
+        "502":
+          description: The external profanity provider returned an invalid response.
+        "503":
+          description: The external profanity provider was unavailable or not configured.
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -772,6 +778,18 @@ components:
         edited:
           type: boolean
           examples: [false]
+        originalBody:
+          type: string
+          description: The original submitted text; nullable for legacy records.
+          examples: ["damn it!"]
+        censoredBody:
+          type: string
+          description: The provider-censored text, or the original text when bypassed.
+          examples: ["**** it!"]
+        moderationStatus:
+          type: string
+          enum: [clean, filtered, bypassed]
+          examples: [filtered]
 
     Page:
       type: object

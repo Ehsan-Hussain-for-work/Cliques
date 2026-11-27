@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Application\Settings\SettingsInterface;
+use App\Application\Services\TextModerationClient;
+use App\Infrastructure\External\ApiNinjasProfanityClient;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -25,6 +27,13 @@ return function (ContainerBuilder $containerBuilder) {
             $logger->pushHandler($handler);
 
             return $logger;
+        },
+
+        TextModerationClient::class => function () {
+            return new ApiNinjasProfanityClient(
+                getenv('API_NINJA_API_KEY') ?: null,
+                2
+            );
         },
 
         PDO::class => function () {

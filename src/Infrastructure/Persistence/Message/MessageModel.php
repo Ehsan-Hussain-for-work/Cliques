@@ -49,7 +49,8 @@ class MessageModel implements MessageRepository
 
     public function findIdMessage(int $id): array
     {
-        $query = 'SELECT id, body, sent_time, sender_id, channel_id, edited
+        $query = 'SELECT id, body, sent_time, sender_id, channel_id, edited,
+        original_body, censored_body, moderation_status
         FROM messages 
         WHERE id = :id';
 
@@ -67,9 +68,9 @@ class MessageModel implements MessageRepository
     public function addMessage(array $providedData): array
     {
         $query = 'INSERT INTO messages 
-        (body, sent_time, sender_id, channel_id, edited) 
+        (body, sent_time, sender_id, channel_id, edited, original_body, censored_body, moderation_status) 
         VALUES 
-        (:body, :sent_time, :sender_id, :channel_id, :edited) ';
+        (:body, :sent_time, :sender_id, :channel_id, :edited, :original_body, :censored_body, :moderation_status) ';
 
         $sql = $this->db->prepare($query);
         $sql->execute([
@@ -77,7 +78,10 @@ class MessageModel implements MessageRepository
             'sent_time' => $providedData['sent_time'],
             'sender_id' => $providedData['sender_id'],
             'channel_id' => $providedData['channel_id'],
-            'edited' => $providedData['edited']
+            'edited' => $providedData['edited'],
+            'original_body' => $providedData['original_body'] ?? $providedData['body'],
+            'censored_body' => $providedData['censored_body'] ?? $providedData['body'],
+            'moderation_status' => $providedData['moderation_status'] ?? 'bypassed'
         ]);
 
         $createdId = (int) $this->db->lastInsertId();
