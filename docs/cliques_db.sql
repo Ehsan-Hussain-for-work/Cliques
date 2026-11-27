@@ -74,7 +74,10 @@ CREATE TABLE `messages` (
   `sent_time` datetime NOT NULL DEFAULT current_timestamp(),
   `sender_id` int(11) DEFAULT NULL,
   `channel_id` int(11) DEFAULT NULL,
-  `edited` tinyint(1) NOT NULL DEFAULT 0
+  `edited` tinyint(1) NOT NULL DEFAULT 0,
+  `original_body` text DEFAULT NULL,
+  `censored_body` text DEFAULT NULL,
+  `moderation_status` varchar(20) NOT NULL DEFAULT 'bypassed'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------

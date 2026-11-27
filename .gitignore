@@ -9,3 +9,4 @@ cliques-lia.code-workspace
 /logs/*
 !/logs/README.md
 .phpunit.result.cache
+.env
