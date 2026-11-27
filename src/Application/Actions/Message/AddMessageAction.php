@@ -32,6 +32,11 @@ class AddMessageAction extends MessageAction
     {
         $addRequest = $this->getFormData();
 
+        // 1. Get authenticated user's information
+        $authUser = $this->request->getAttribute('authUser');
+        $addRequest['sent_time'] = gmdate('Y-m-d H:i:s', time());
+        $addRequest['sender_id'] = (int) $authUser['id'];
+        $addRequest['edited'] = 0;
         if (empty($addRequest) || !\is_array($addRequest)) {
             throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
         }

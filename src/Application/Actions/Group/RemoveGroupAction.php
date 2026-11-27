@@ -9,15 +9,30 @@ class RemoveGroupAction extends GroupAction
 
     protected function action(): Response
     {
-        $groupId = (int) $this->args['id'];
+        $authUser = $this->request->getAttribute('authUser');
+        $userId = (int) $authUser['id'];
+
+        $groupId = (int) $this->resolveArg('id');
+
+        // Check moderator permissions.
+        if (!$this->groupRepository->isMod($userId, $groupId)) {
+
+            throw new \Slim\Exception\HttpForbiddenException(
+                $this->request,
+                'You must be a group moderator to delete the group.'
+            );
+        }
 
         $deletion = $this->groupRepository->removeGroup($groupId);
 
         if ($deletion) {
-            return $this->respondWithData(['message' => "Group $groupId deleted."]);
-        } else {
-            //error message goes here. Temp value here for now.  
-            return $this->respondWithData(['message' => "No Group deleted."]);
+            return $this->respondWithData([
+                'message' => "Group $groupId deleted."
+            ]);
         }
+
+        return $this->respondWithData([
+            'message' => 'No group deleted.'
+        ], 404);
     }
 }

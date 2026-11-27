@@ -65,22 +65,54 @@ class ChannelModel implements ChannelRepository
         }
     }
 
-    public function addChannel(array $providedData): array
+    public function addChannel(int $creatorId, array $values): array
     {
-        $query = 'INSERT INTO channels 
-        (`name`, group_id, adult_gate) 
-        VALUES 
-        (:name, :group_id, :adult_gate)';
 
-        $sql = $this->db->prepare($query);
-        $sql->execute([
-            'name' => $providedData['name'],
-            'group_id' => $providedData['group_id'],
-            'adult_gate' => $providedData['adult_gate']
-        ]);
+        try {
 
-        $createdId = (int) $this->db->lastInsertId();
-        return $this->findIdChannel($createdId);
+            $this->db->beginTransaction();
+
+            // Create the channel.
+            $query = 'INSERT INTO channels
+            (`name`, group_id, adult_gate)
+            VALUES
+            (:name, :group_id, :adult_gate)';
+
+            $sql = $this->db->prepare($query);
+
+            $sql->execute([
+                'name' => $values['name'],
+                'group_id' => $values['group_id'],
+                'adult_gate' => $values['adult_gate']
+            ]);
+
+            $channelId = (int) $this->db->lastInsertId();
+
+            // Automatically make creator a channel moderator.
+            $query = 'INSERT INTO memberships
+            (user_id, group_id, channel_id, mod_status)
+            VALUES
+            (:user_id, :group_id, :channel_id, 1)';
+
+            $sql = $this->db->prepare($query);
+
+            $sql->execute([
+                'user_id' => $creatorId,
+                'group_id' => $values['group_id'],
+                'channel_id' => $channelId
+            ]);
+
+            $this->db->commit();
+
+            return $this->findIdChannel($channelId);
+        } catch (\Throwable $e) {
+
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     public function removeChannel(int $id): bool
@@ -98,6 +130,107 @@ class ChannelModel implements ChannelRepository
         } else {
             return false;
         }
+    }
+
+    public function isMod(int $userId, int $channelId): bool
+    {
+        $query = 'SELECT 1
+        FROM memberships
+        WHERE user_id = :user_id
+        AND channel_id = :channel_id
+        AND mod_status = 1
+        AND leave_date IS NULL
+        LIMIT 1';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'channel_id' => $channelId
+        ]);
+
+        return $sql->fetchColumn() !== false;
+    }
+
+    public function updateChannel(int $channelId, array $values): array
+    {
+        $channel = $this->findIdChannel($channelId);
+
+        $query = 'UPDATE channels
+        SET name = :name, adult_gate = :adult_gate
+        WHERE id = :id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'id' => $channelId,
+            'name' => $values['name'] ?? $channel['name'],
+            'adult_gate' => $values['adult_gate'] ?? $channel['adult_gate']
+        ]);
+
+        return $this->findIdChannel($channelId);
+    }
+
+    public function joinChannel(
+        int $userId,
+        int $channelId
+    ): bool {
+
+        // Retrieve the channel and its parent group's age restrictions.
+        $query = 'SELECT
+                c.group_id,
+                c.adult_gate AS channel_adult_gate,
+                g.adult_gate AS group_adult_gate,
+                (
+                    SELECT user_birthday <=
+                        DATE_SUB(CURDATE(), INTERVAL 18 YEAR)
+                    FROM users
+                    WHERE id = :user_id
+                ) AS is_adult
+              FROM channels c
+              INNER JOIN groups g ON c.group_id = g.id
+              WHERE c.id = :channel_id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'channel_id' => $channelId
+        ]);
+
+        $channel = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if (!$channel) {
+            throw new ChannelNotFoundException();
+        }
+
+        // Check both the channel's and parent group's adult_gate.
+        $adultGate =
+            (int) $channel['channel_adult_gate'] === 1 ||
+            (int) $channel['group_adult_gate'] === 1;
+
+        if ($adultGate && !(bool) $channel['is_adult']) {
+            return false;
+        }
+
+        // Create or reactivate channel membership.
+        $query = 'INSERT INTO memberships
+                (user_id, group_id, channel_id, mod_status)
+              VALUES
+                (:user_id, :group_id, :channel_id, 0)
+              ON DUPLICATE KEY UPDATE
+                join_date = UTC_TIMESTAMP(),
+                leave_date = NULL';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'group_id' => $channel['group_id'],
+            'channel_id' => $channelId
+        ]);
+
+        return true;
     }
 
     private function execute(string $sql, array $params): \PDOStatement

@@ -36,4 +36,6 @@ interface MessageRepository
     public function removeMessage(int $id): bool;
 
     public function page(array $query): array;
+
+    public function updateMessage(int $id, string $newBody): array;
 }

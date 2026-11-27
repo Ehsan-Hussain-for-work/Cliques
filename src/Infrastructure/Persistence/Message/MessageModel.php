@@ -105,6 +105,23 @@ class MessageModel implements MessageRepository
         }
     }
 
+    public function updateMessage(int $id, string $newBody): array
+    {
+        $query = 'UPDATE messages 
+                  SET body = :body, 
+                      edited = 1 
+                  WHERE id = :id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'body' => $newBody,
+            'id' => $id
+        ]);
+
+        return $this->findIdMessage($id);
+    }
+
     private function execute(string $sql, array $params): \PDOStatement
     {
         $stmt = $this->db->prepare($sql);

@@ -65,22 +65,52 @@ class GroupModel implements GroupRepository
         }
     }
 
-    public function addGroup(array $providedData): array
+    public function addGroup(int $creatorId, array $values): array
     {
-        $query = 'INSERT INTO groups 
-        (`name`, creation_date, adult_gate) 
-        VALUES 
-        (:name, :creation_date, :adult_gate)';
 
-        $sql = $this->db->prepare($query);
-        $sql->execute([
-            'name' => $providedData['name'],
-            'creation_date' => $providedData['creation_date'],
-            'adult_gate' => $providedData['adult_gate']
-        ]);
+        try {
 
-        $createdId = (int) $this->db->lastInsertId();
-        return $this->findIdGroup($createdId);
+            $this->db->beginTransaction();
+
+            $query = 'INSERT INTO groups
+            (`name`, creation_date, adult_gate)
+            VALUES
+            (:name, UTC_TIMESTAMP(), :adult_gate)';
+
+            $sql = $this->db->prepare($query);
+
+            $sql->execute([
+                'name' => $values['name'],
+                'adult_gate' => $values['adult_gate']
+            ]);
+
+            $groupId = (int) $this->db->lastInsertId();
+
+            // make creator = moderator
+            $query = 'INSERT INTO memberships
+            (user_id, group_id, channel_id, mod_status)
+            VALUES
+            (:user_id, :group_id, NULL, 1)';
+
+            $sql = $this->db->prepare($query);
+
+            $sql->execute([
+                'user_id' => $creatorId,
+                'group_id' => $groupId
+            ]);
+
+            $this->db->commit();
+
+            return $this->findIdGroup($groupId);
+        } catch (\Throwable $e) {
+
+            //undoes in case of Groups created, but owners moderation fails
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     public function removeGroup(int $id): bool
@@ -98,6 +128,106 @@ class GroupModel implements GroupRepository
         } else {
             return false;
         }
+    }
+
+    public function isMod(
+        int $userId,
+        int $groupId
+    ): bool {
+
+        $query = 'SELECT 1
+        FROM memberships
+        WHERE user_id = :user_id
+        AND group_id = :group_id
+        AND channel_id IS NULL
+        AND mod_status = 1
+        AND leave_date IS NULL
+        LIMIT 1';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'group_id' => $groupId
+        ]);
+
+        return $sql->fetchColumn() !== false;
+    }
+
+    public function updateGroup(int $groupId, array $values): array
+    {
+        $group = $this->findIdGroup($groupId);
+
+        $query = 'UPDATE groups
+        SET name = :name, adult_gate = :adult_gate
+        WHERE id = :id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'id' => $groupId,
+            'name' => $values['name'] ?? $group['name'],
+            'adult_gate' => $values['adult_gate'] ?? $group['adult_gate']
+        ]);
+
+        return $this->findIdGroup($groupId);
+    }
+
+    public function joinGroup(
+        int $userId,
+        int $groupId
+    ): bool {
+
+        // Get the group's adult_gate setting and check the user's age.
+        $query = 'SELECT
+                g.adult_gate,
+                (
+                    SELECT user_birthday <=
+                        DATE_SUB(CURDATE(), INTERVAL 18 YEAR)
+                    FROM users
+                    WHERE id = :user_id
+                ) AS is_adult
+              FROM groups g
+              WHERE g.id = :group_id';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'group_id' => $groupId
+        ]);
+
+        $group = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if (!$group) {
+            throw new GroupNotFoundException();
+        }
+
+        // Reject users who do not meet the age requirement.
+        if (
+            (int) $group['adult_gate'] === 1 &&
+            !(bool) $group['is_adult']
+        ) {
+            return false;
+        }
+
+        // Create or reactivate the membership.
+        $query = 'INSERT INTO memberships
+                (user_id, group_id, channel_id, mod_status)
+              VALUES
+                (:user_id, :group_id, NULL, 0)
+              ON DUPLICATE KEY UPDATE
+                join_date = UTC_TIMESTAMP(),
+                leave_date = NULL';
+
+        $sql = $this->db->prepare($query);
+
+        $sql->execute([
+            'user_id' => $userId,
+            'group_id' => $groupId
+        ]);
+
+        return true;
     }
 
     private function execute(string $sql, array $params): \PDOStatement

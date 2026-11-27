@@ -13,15 +13,24 @@ class AddChannelAction extends ChannelAction
 {
     protected function action(): Response
     {
-        $addRequest = $this->getFormData();
+        $authUser = $this->request->getAttribute('authUser');
 
+        $creatorId = (int) $authUser['id'];
         if (empty($addRequest) || !\is_array($addRequest)) {
             throw new BadReq($this->request, 'Invalid or missing request body. Please send application/json.');
         }
 
-        $addRequest['adult_gate'] = filter_var($addRequest['adult_gate'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        $addRequest = (array) $this->getFormData();
 
-        $channel = $this->channelRepository->addChannel($addRequest);
+        $addRequest['adult_gate'] = filter_var(
+            $addRequest['adult_gate'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        ) ? 1 : 0;
+
+        $channel = $this->channelRepository->addChannel(
+            $creatorId,
+            $addRequest
+        );
 
         return $this->respondWithData($channel, 201);
     }
