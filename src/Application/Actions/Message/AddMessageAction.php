@@ -16,10 +16,7 @@ class AddMessageAction extends MessageAction
 
         // 1. Get authenticated user's information
         $authUser = $this->request->getAttribute('authUser');
-        $addRequest['sent_time'] = gmdate(
-            'Y-m-d H:i:s',
-            time()
-        );
+        $addRequest['sent_time'] = gmdate('Y-m-d H:i:s', time());
         $addRequest['sender_id'] = (int) $authUser['id'];
         $addRequest['edited'] = 0;
 

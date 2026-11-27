@@ -28,12 +28,30 @@ interface ChannelRepository
     /**
      * @return String[]
      */
-    public function addChannel(array $providedData): array;
+    public function addChannel(
+        int $creatorId,
+        array $providedData
+    ): array;
 
     /**
      * @return bool
      */
     public function removeChannel(int $id): bool;
+
+    public function isMod(
+        int $userId,
+        int $channelId
+    ): bool;
+
+    public function updateChannel(
+        int $channelId,
+        array $values
+    ): array;
+
+    public function joinChannel(
+        int $userId,
+        int $channelId
+    ): bool;
 
     /**
      * @return array

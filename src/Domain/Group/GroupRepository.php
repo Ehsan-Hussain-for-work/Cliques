@@ -28,12 +28,18 @@ interface GroupRepository
     /**
      * @return String[]
      */
-    public function addGroup(array $providedData): array;
+    public function addGroup(int $creatorId, array $providedData): array;
 
     /**
      * @return bool
      */
     public function removeGroup(int $id): bool;
+
+    public function isMod(int $userId, int $groupId): bool;
+
+    public function updateGroup(int $groupId, array $values): array;
+
+    public function joinGroup(int $userId, int $groupId): bool;
 
     public function page(array $query): array;
 }

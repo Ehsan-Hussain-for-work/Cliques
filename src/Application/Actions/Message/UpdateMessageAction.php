@@ -36,10 +36,9 @@ class UpdateMessageAction extends MessageAction
 
         // 5. valid time check
         if ($currentTime > $validEditTime) {
-            throw new HttpForbiddenException(
-                $this->request,
-                'Messages can only be edited within the 30 minutes it was sent.'
-            );
+            return $this->respondWithData([
+                'message' => 'Messages can only be edited within the 30 minutes it was sent.'
+            ], 409);
         }
 
         // 6. Get new JSON info

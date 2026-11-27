@@ -14,10 +14,14 @@ use App\Application\Actions\Group\RemoveGroupAction;
 use App\Application\Actions\Group\AddGroupAction;
 use App\Application\Actions\Group\ListGroupsAction;
 use App\Application\Actions\Group\ViewGroupAction;
+use App\Application\Actions\Group\UpdateGroupAction;
+use App\Application\Actions\Group\JoinGroupAction;
 use App\Application\Actions\Channel\RemoveChannelAction;
 use App\Application\Actions\Channel\AddChannelAction;
 use App\Application\Actions\Channel\ListChannelsAction;
 use App\Application\Actions\Channel\ViewChannelAction;
+use App\Application\Actions\Channel\UpdateChannelAction;
+use App\Application\Actions\Channel\JoinChannelAction;
 use App\Application\Actions\Message\RemoveMessageAction;
 use App\Application\Actions\Message\AddMessageAction;
 use App\Application\Actions\Message\ListMessagesAction;
@@ -67,16 +71,28 @@ return function (App $app) {
         $group->get('', ListGroupsAction::class)
             ->add(new CollectionQ(GroupCollectionQuery::class));
         $group->get('/{id}', ViewGroupAction::class);
-        $group->post('', AddGroupAction::class);
-        $group->delete('/{id}', RemoveGroupAction::class);
+        $group->post('', AddGroupAction::class)
+            ->add(AuthMiddleware::class);
+        $group->post('/{id}/join', JoinGroupAction::class)
+            ->add(AuthMiddleware::class);
+        $group->put('/{id}', UpdateGroupAction::class)
+            ->add(AuthMiddleware::class);
+        $group->delete('/{id}', RemoveGroupAction::class)
+            ->add(AuthMiddleware::class);
     });
 
     $app->group('/channels', function (Group $group) {
         $group->get('', ListChannelsAction::class)
             ->add(new CollectionQ(ChannelCollectionQuery::class));
         $group->get('/{id}', ViewChannelAction::class);
-        $group->post('', AddChannelAction::class);
-        $group->delete('/{id}', RemoveChannelAction::class);
+        $group->post('', AddChannelAction::class)
+            ->add(AuthMiddleware::class);
+        $group->post('/{id}/join', JoinChannelAction::class)
+            ->add(AuthMiddleware::class);
+        $group->put('/{id}', UpdateChannelAction::class)
+            ->add(AuthMiddleware::class);
+        $group->delete('/{id}', RemoveChannelAction::class)
+            ->add(AuthMiddleware::class);
     });
 
     $app->group('/messages', function (Group $group) {

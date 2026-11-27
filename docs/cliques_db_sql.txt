@@ -31,7 +31,7 @@ CREATE TABLE channels (
 CREATE TABLE memberships (
 	user_id INT NOT NULL,
     group_id INT NOT NULL,
-    channel_id INT NOT NULL,
+    channel_id INT DEFAULT NULL,
     mod_status BOOLEAN NOT NULL DEFAULT FALSE,
     join_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     leave_date DATETIME NULL
