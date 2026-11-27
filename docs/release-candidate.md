@@ -3,8 +3,8 @@
 ## 1. Release Candidate Identification
 
 * **Repository:** `cliques-lia`
-* **Commit Hash:** `8fdcc5f`
-* **Branch / Tag:** `main`
+* **Commit Hash:** `07bfafd359cecd13ad8ba09364dae4adaaecf05e`
+* **Branch / Tag:** `checlist-item3` (QA candidate branch)
 * **Runtime Requirements:** PHP `^7.4 || ^8.0` with `ext-json` enabled, Composer 2.x
 
 ## 2. Installation
@@ -14,14 +14,16 @@ Clone the repository, check out the exact release candidate commit, and install 
 ```bash
 git clone https://github.com/Ehsan-Hussain-for-work/Cliques cliques-lia
 cd cliques-lia
-git checkout 8fdcc5f
+git checkout 07bfafd359cecd13ad8ba09364dae4adaaecf05e
 composer install --no-dev --optimize-autoloader
 ```
 
 *(Note: Omit `--no-dev` if setting up a testing or staging environment.)*
 
 ## 3. Configuration
-This application does not use a `.env` file. Configuration is split across two PHP files in `app/`:
+Copy `.env.example` to `.env` and set `API_NINJA_API_KEY` locally. Never commit `.env` or expose the key in JavaScript.
+
+Configuration is split across `.env`, `app/settings.php`, and `app/dependencies.php`:
 
 1. **Application & Logging Settings (`app/settings.php`):**
    * `displayErrorDetails`: Currently `true` (must be changed to `false` for production).
@@ -33,8 +35,8 @@ This application does not use a `.env` file. Configuration is split across two P
    * Update the hardcoded `PDO::class` container definition to match the target MySQL instance:
      * `$host`: `'127.0.0.1'`
      * `$db`: `'cliques_db'`
-     * `$user`: `'root'` *(replace with dedicated least-privilege DB user in production)*
-     * `$pass`: `''` *(set strong production password)*
+     * `$user`: `'root'` 
+     * `$pass`: `''` 
      * `$charset`: `'utf8mb4'`
 
 3. **File Permissions:**

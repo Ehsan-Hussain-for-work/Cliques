@@ -4,38 +4,58 @@ declare(strict_types=1);
 
 namespace Tests\Application\Actions\User;
 
-use App\Application\Actions\ActionPayload;
 use App\Domain\User\UserRepository;
-use App\Domain\User\User;
 use DI\Container;
+use Prophecy\Argument;
 use Tests\TestCase;
 
 class ListUserActionTest extends TestCase
 {
-    public function testAction()
+    public function testAction(): void
     {
-        // $app = $this->getAppInstance();
+        $app = $this->getAppInstance();
 
-        // /** @var Container $container */
-        // $container = $app->getContainer();
+        /** @var Container $container */
+        $container = $app->getContainer();
 
-        // $user = new User(1, 'bill.gates', 'Bill', 'Gates');
+        $envelope = [
+            'items' => [
+                [
+                    'id' => 1,
+                    'username' => 'bill.gates',
+                ],
+            ],
+            'page' => [
+                'number' => 1,
+                'perPage' => 5,
+                'returned' => 1,
+                'totalItems' => 1,
+                'totalPages' => 1,
+            ],
+            'links' => [
+                'self' => '/users?page=1&limit=5',
+                'next' => null,
+                'prev' => null,
+            ],
+        ];
 
-        // $userRepositoryProphecy = $this->prophesize(UserRepository::class);
-        // $userRepositoryProphecy
-        //     ->findAll()
-        //     ->willReturn([$user])
-        //     ->shouldBeCalledOnce();
+        $userRepositoryProphecy = $this->prophesize(UserRepository::class);
+        $userRepositoryProphecy
+            ->page(Argument::type('array'))
+            ->willReturn($envelope)
+            ->shouldBeCalledOnce();
 
-        // $container->set(UserRepository::class, $userRepositoryProphecy->reveal());
+        $container->set(UserRepository::class, $userRepositoryProphecy->reveal());
 
-        // $request = $this->createRequest('GET', '/users');
-        // $response = $app->handle($request);
+        $request = $this->createRequest('GET', '/users');
+        $response = $app->handle($request);
 
-        // $payload = (string) $response->getBody();
-        // $expectedPayload = new ActionPayload(200, [$user]);
-        // $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);
+        $payload = json_decode((string) $response->getBody(), true);
 
-        // $this->assertEquals($serializedPayload, $payload);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame($envelope, $payload);
+        $this->assertArrayHasKey('items', $payload);
+        $this->assertArrayHasKey('page', $payload);
+        $this->assertArrayHasKey('links', $payload);
     }
 }

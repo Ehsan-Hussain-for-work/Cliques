@@ -45,7 +45,7 @@ class AddMessageAction extends MessageAction
         }
 
         $body = $addRequest['body'];
-        if (strlen($body) > 1000) {
+        if (\strlen($body) > 1000) {
             throw new BadReq($this->request, 'Message text exceeds the 1000 character provider limit.');
         }
 
